@@ -1,70 +1,116 @@
-# Getting Started with Create React App
+# AI-Assisted E-Commerce Platform (MERN Stack)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack e-commerce web application built on the **MERN stack** (MongoDB, Express.js, React.js, Node.js), featuring an integrated **AI assistant** that helps customers with product discovery, recommendations, and support queries throughout their shopping experience.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- User authentication and account management
+- Product catalog with search, filtering, and categories
+- Shopping cart and checkout flow
+- Order management and history
+- **AI-powered customer assistant** for product recommendations, FAQs, and shopping guidance
+- Admin panel for managing products, orders, and users
+- Responsive design for desktop and mobile
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend:** React.js
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **AI Integration:** AI assistant module for customer interaction
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+```
+project-root/
+├── client/          # React frontend
+├── server files/    # Express backend, API routes, controllers
+├── models/          # MongoDB schemas
+└── ...
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Prerequisites
 
-### `npm run build`
+Before you begin, ensure you have the following installed:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- [Node.js](https://nodejs.org/) (v16 or higher recommended)
+- [npm](https://www.npmjs.com/)
+- [MongoDB](https://www.mongodb.com/) (local instance or a MongoDB Atlas connection string)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Started
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 1. Clone the repository
 
-### `npm run eject`
+```bash
+git clone <repository-url>
+cd <repository-folder>
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 2. Install dependencies
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Install server dependencies from the project root:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Install client dependencies:
 
-## Learn More
+```bash
+cd client
+npm install
+cd ..
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 3. Configure environment variables
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Create a `.env` file in the project root and add the required variables, such as:
 
-### Code Splitting
+```
+MONGO_URI=your_mongodb_connection_string
+PORT=5000
+JWT_SECRET=your_jwt_secret
+AI_API_KEY=your_ai_service_api_key
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+> Adjust variable names to match what the codebase expects.
 
-### Analyzing the Bundle Size
+## Running the Project
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+You need to run the **server** and the **client** separately, typically in two terminal windows.
 
-### Making a Progressive Web App
+### Run the server
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+From the project root:
 
-### Advanced Configuration
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This starts the backend Express server (and connects to MongoDB).
 
-### Deployment
+### Run the client
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+In a separate terminal, from the project root:
 
-### `npm run build` fails to minify
+```bash
+cd client
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This starts the React development server, usually available at `http://localhost:3000`, while the backend typically runs at `http://localhost:5000` (or the port specified in your `.env`).
+
+## Usage
+
+1. Start the server (`npm start` from root).
+2. Start the client (`cd client && npm start`).
+3. Open your browser at the client URL to browse products, add items to your cart, and check out.
+4. Use the AI assistant widget/chat to get product recommendations or ask shopping-related questions.
+
+## Contributing
+
+Contributions are welcome. Please fork the repository, create a feature branch, and submit a pull request with a clear description of your changes.
+
+## License
+
+This project is licensed under the MIT License.
