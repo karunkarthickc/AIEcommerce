@@ -7,10 +7,20 @@ const connectDatabase = require("./config/database");
 const cloudinary = require("cloudinary");
 
 const errorMiddleware = require("./middleware/error");
+const cors = require("cors");
 
 
 const app = express();
 dotenv.config();
+app.use(
+  cors({
+    origin: [
+      "https://ai-ecommerce-phi.vercel.app",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
