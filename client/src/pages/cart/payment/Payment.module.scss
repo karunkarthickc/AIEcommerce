@@ -1,0 +1,137 @@
+$paper: #eef0ea;
+$paper-raised: #f8f9f4;
+$ink: #14171a;
+$ink-soft: #5c6259;
+$line: #d7d8cc;
+$green: #1e6f50;
+$green-deep: #154f39;
+
+.payment {
+    min-height: 100vh;
+    background: $paper;
+    padding: 48px 0 96px;
+    font-family: "Inter", var(--font-poppins, sans-serif);
+    color: $ink;
+}
+
+.eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: $ink-soft;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+
+    &::before {
+        content: "";
+        width: 18px;
+        height: 1px;
+        background: $ink-soft;
+    }
+}
+
+.heading {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 42px);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+
+.subheading {
+    color: $ink-soft;
+    font-size: 15px;
+    margin-bottom: 32px;
+}
+
+.payment_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+.panel {
+    background: $paper-raised;
+    border: 1px solid $line;
+    border-radius: 2px;
+    width: 100%;
+    max-width: 440px;
+    padding: 8px 28px 28px;
+}
+
+.form_head {
+    padding: 22px 0 16px;
+    border-bottom: 1px solid $line;
+    margin-bottom: 6px;
+
+    h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 18px;
+        margin: 0;
+        font-weight: 600;
+    }
+}
+
+.from_group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 18px;
+
+    label {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: $ink-soft;
+    }
+}
+
+.stripe_field {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    border: 1px solid $line;
+    border-radius: 2px;
+    padding: 0 14px;
+    background: #fff;
+    transition: border-color 0.15s ease;
+
+    &:focus-within {
+        border-color: $green;
+    }
+
+    > div,
+    iframe {
+        width: 100%;
+    }
+}
+
+.submit_btn {
+    width: 100%;
+    margin-top: 26px;
+    background: $green;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: $green-deep;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $ink;
+        outline-offset: 2px;
+    }
+}

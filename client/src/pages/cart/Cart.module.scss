@@ -1,0 +1,386 @@
+// Design tokens
+$paper: #eef0ea;
+$paper-raised: #f8f9f4;
+$ink: #14171a;
+$ink-soft: #5c6259;
+$line: #d7d8cc;
+$green: #1e6f50;
+$green-deep: #154f39;
+$brick: #b23a2e;
+
+.cart {
+    min-height: 100vh;
+    background: $paper;
+    padding: 48px 0 96px;
+    font-family: "Inter", var(--font-poppins, sans-serif);
+    color: $ink;
+}
+
+.eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: $ink-soft;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+
+    &::before {
+        content: "";
+        width: 18px;
+        height: 1px;
+        background: $ink-soft;
+    }
+}
+
+.heading {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 42px);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+
+.subheading {
+    color: $ink-soft;
+    font-size: 15px;
+    margin-bottom: 32px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap: 28px;
+    align-items: start;
+
+    @media (max-width: 860px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ---- Item list ----
+.panel {
+    background: $paper-raised;
+    border: 1px solid $line;
+    border-radius: 2px;
+}
+
+.list_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 22px 24px 16px;
+
+    h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 19px;
+        margin: 0;
+        font-weight: 600;
+    }
+}
+
+.count {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: $ink-soft;
+}
+
+.item_row {
+    display: grid;
+    grid-template-columns: 28px 68px 1fr auto auto auto;
+    gap: 18px;
+    align-items: center;
+    padding: 20px 24px;
+    border-top: 1px solid $line;
+
+    @media (max-width: 640px) {
+        grid-template-columns: 24px 56px 1fr;
+        row-gap: 10px;
+
+        .qty_cell,
+        .price_cell,
+        .remove_cell {
+            grid-column: 2 / -1;
+        }
+    }
+}
+
+.idx {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: $ink-soft;
+}
+
+.thumb {
+    width: 64px;
+    height: 64px;
+    background: #fff;
+    border: 1px solid $line;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.meta {
+    display: flex;
+    flex-direction: column;
+
+    a {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        font-size: 15.5px;
+        color: $ink;
+        text-decoration: none;
+
+        &:hover {
+            color: $green;
+        }
+    }
+
+    .unit {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 12px;
+        color: $ink-soft;
+        margin-top: 4px;
+    }
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid $ink;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 32px;
+
+    button {
+        width: 32px;
+        height: 100%;
+        border: none;
+        background: transparent;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 15px;
+        cursor: pointer;
+        color: $ink;
+        transition: background 0.15s ease, color 0.15s ease;
+
+        &:first-child:hover {
+            background: $brick;
+            color: white;
+        }
+
+        &:last-child:hover {
+            background: $green;
+            color: white;
+        }
+    }
+
+    input {
+        width: 34px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid $ink;
+        border-right: 1px solid $ink;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 13px;
+        height: 100%;
+        background: transparent;
+        color: $ink;
+
+        // hide number input spinners
+        -moz-appearance: textfield;
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+}
+
+.price_cell {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 14.5px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    min-width: 74px;
+}
+
+.remove_cell {
+    button {
+        background: none;
+        border: none;
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        color: $ink-soft;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        padding: 0;
+
+        &:hover {
+            color: $brick;
+        }
+    }
+}
+
+// ---- Receipt summary ----
+.receipt_wrap {
+    position: sticky;
+    top: 28px;
+}
+
+.receipt {
+    background: $paper-raised;
+    border: 1px solid $line;
+    padding: 26px 26px 16px;
+    position: relative;
+    clip-path: polygon(
+        0% 10px,
+        4% 0,
+        8% 10px,
+        12% 0,
+        16% 10px,
+        20% 0,
+        24% 10px,
+        28% 0,
+        32% 10px,
+        36% 0,
+        40% 10px,
+        44% 0,
+        48% 10px,
+        52% 0,
+        56% 10px,
+        60% 0,
+        64% 10px,
+        68% 0,
+        72% 10px,
+        76% 0,
+        80% 10px,
+        84% 0,
+        88% 10px,
+        92% 0,
+        96% 10px,
+        100% 0,
+        100% 100%,
+        96% calc(100% - 10px),
+        92% 100%,
+        88% calc(100% - 10px),
+        84% 100%,
+        80% calc(100% - 10px),
+        76% 100%,
+        72% calc(100% - 10px),
+        68% 100%,
+        64% calc(100% - 10px),
+        60% 100%,
+        56% calc(100% - 10px),
+        52% 100%,
+        48% calc(100% - 10px),
+        44% 100%,
+        40% calc(100% - 10px),
+        36% 100%,
+        32% calc(100% - 10px),
+        28% 100%,
+        24% calc(100% - 10px),
+        20% 100%,
+        16% calc(100% - 10px),
+        12% 100%,
+        8% calc(100% - 10px),
+        4% 100%,
+        0% calc(100% - 10px)
+    );
+}
+
+.receipt_head {
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed $line;
+    margin-bottom: 16px;
+
+    h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        margin: 6px 0 0;
+    }
+}
+
+.r_eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: $ink-soft;
+}
+
+.r_row {
+    display: flex;
+    justify-content: space-between;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13.5px;
+    padding: 7px 0;
+    color: $ink-soft;
+
+    &.total {
+        color: $ink;
+        font-weight: 600;
+        font-size: 16px;
+        border-top: 1px dashed $line;
+        margin-top: 6px;
+        padding-top: 14px;
+    }
+}
+
+.checkout_btn {
+    width: 100%;
+    margin-top: 18px;
+    background: $green;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s ease;
+
+    &:hover {
+        background: $green-deep;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $ink;
+        outline-offset: 2px;
+    }
+}
+
+.r_note {
+    text-align: center;
+    font-size: 11.5px;
+    color: $ink-soft;
+    margin: 12px 0 8px;
+}
+
+.barcode {
+    height: 34px;
+    margin: 0 -26px;
+    background-image: repeating-linear-gradient(
+        90deg,
+        $ink 0 2px,
+        transparent 2px 5px,
+        $ink 5px 6px,
+        transparent 6px 11px,
+        $ink 11px 14px,
+        transparent 14px 17px
+    );
+    opacity: 0.85;
+}
