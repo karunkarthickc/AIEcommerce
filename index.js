@@ -16,6 +16,7 @@ app.use(
   cors({
     origin: [
       "https://ai-ecommerce-phi.vercel.app",
+      "https://ai-ecommerce-ia65zhjn6-karuns-projects-afccf726.vercel.app",
       "http://localhost:3000",
     ],
     credentials: true,
