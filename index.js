@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const connectDatabase = require("./config/database");
 const cloudinary = require("cloudinary");
-const path = require("path");
+
 const errorMiddleware = require("./middleware/error");
 
 
@@ -30,11 +30,7 @@ app.use("/api/v1", payment);
 app.use("/api/v1", order);
 app.use("/api/v1", assistant);
 
-app.use(express.static(path.join(__dirname, "/client/build")));
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "/client/build", "index.html"));
-});
 
 // connecting to database
 connectDatabase();
