@@ -89,10 +89,10 @@ const Navbar = () => {
                                         className="user-btn"
                                         onClick={() => setDropdown(!dropdown)}
                                     >
-                                        <img
+                                        {/* <img
                                             src={user?.avatar?.url}
                                             alt={user?.name}
-                                        />
+                                        /> */}
                                         <span>{user?.name}</span>
                                     </button>
 

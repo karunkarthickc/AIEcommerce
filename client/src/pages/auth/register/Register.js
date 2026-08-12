@@ -128,7 +128,7 @@ const Register = ({ history }) => {
                             />
                         </div>
 
-                        <div className={styles.form_group}>
+                        {/* <div className={styles.form_group}>
                             <label>Avatar</label>
                             <div className={styles.avatar_row}>
                                 <div className={styles.avatar_preview}>
@@ -152,7 +152,7 @@ const Register = ({ history }) => {
                                     />
                                 </label>
                             </div>
-                        </div>
+                        </div> */}
 
                         <button
                             type="submit"

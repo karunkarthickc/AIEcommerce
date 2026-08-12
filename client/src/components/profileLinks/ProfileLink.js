@@ -28,7 +28,7 @@ const ProfileLink = () => {
                 <Fragment>
                     <div className={styles.profile_links}>
                         <div className={styles.id_card}>
-                            {user && <img src={user.avatar.url} alt={user?.name} />}
+                            {/* {user && <img src={user.avatar.url} alt={user?.name} />} */}
                             <h4>{user?.name}</h4>
                             <p>{user?.email}</p>
                         </div>

@@ -133,7 +133,7 @@ const UpdateProfile = ({ history }) => {
                                         />
                                     </div>
 
-                                    <div className={styles.from_group}>
+                                    {/* <div className={styles.from_group}>
                                         <label htmlFor="customFile">Avatar</label>
                                         <div className={styles.avatar_row}>
                                             <div className={styles.avatar_preview}>
@@ -154,7 +154,7 @@ const UpdateProfile = ({ history }) => {
                                                 />
                                             </label>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     <button type="submit" className={styles.submit_btn}>
                                         {loading ? <ButtonLoader /> : "Update"}
