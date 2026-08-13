@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import CheckoutSteps from "../checkoutSteps/CheckoutSteps";
 import styles from "./Payment.module.scss";
 
@@ -33,15 +33,36 @@ const options = {
     },
 };
 
+// Safely read + validate orderInfo so a missing/corrupt sessionStorage value
+// never throws during render.
+const readOrderInfo = () => {
+    try {
+        const raw = sessionStorage.getItem("orderInfo");
+        if (!raw) return null;
+
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.totalPrice === "undefined") return null;
+
+        return parsed;
+    } catch (err) {
+        console.error("[Payment] Failed to parse orderInfo from sessionStorage:", err);
+        return null;
+    }
+};
+
 const Payment = ({ history }) => {
     const alert = useAlert();
     const stripe = useStripe();
     const elements = useElements();
     const dispatch = useDispatch();
 
+    const [submitting, setSubmitting] = useState(false);
+
     const { user } = useSelector((state) => state.auth);
     const { cartItems, shippingInfo } = useSelector((state) => state.cart);
     const { error } = useSelector((state) => state.newOrder);
+
+    const orderInfo = readOrderInfo();
 
     useEffect(() => {
         if (error) {
@@ -49,70 +70,84 @@ const Payment = ({ history }) => {
             alert.error(error);
             dispatch(clearErrors());
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, alert, error]);
 
-    const order = { orderItems: cartItems, shippingInfo };
+    // Fallback: no valid order info to charge. Redirect instead of crashing.
+    useEffect(() => {
+        if (!orderInfo) {
+            alert.error("We couldn't find your order details. Please confirm your order again.");
+            history.push("/order/confirm");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [orderInfo]);
 
-    const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo"));
-    console.log("[Payment] user:", user);
-    console.log("[Payment] orderInfo from sessionStorage:", orderInfo);
+    // Fallback: not logged in (e.g. cross-origin cookie wasn't sent, session
+    // expired, or user hit /payment directly). Redirect instead of crashing
+    // deeper in submitHandler when user.name/user.email is accessed.
+    useEffect(() => {
+        if (!user) {
+            alert.error("Please log in to continue with payment.");
+            history.push("/login");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
-    if (orderInfo) {
-        order.itemsPrice = orderInfo.itemsPrice;
-        order.shippingPrice = orderInfo.shippingPrice;
-        order.taxPrice = orderInfo.taxPrice;
-        order.totalPrice = orderInfo.totalPrice;
-    } else {
-        // This is a likely cause of a blank page: totalPrice access below will throw
-        // synchronously during render if orderInfo is null (e.g. sessionStorage was
-        // cleared, or the user landed on /payment directly without going through
-        // the order confirm step).
-        console.error(
-            "[Payment] orderInfo is missing from sessionStorage — accessing orderInfo.totalPrice next will throw."
-        );
+    // Nothing safe to render yet — bail out quietly instead of crashing.
+    // The effects above will redirect on the next tick.
+    if (!orderInfo || !user) {
+        return null;
     }
 
-    const paymentData = { amount: Math.round(orderInfo.totalPrice * 100) };
-    console.log("[Payment] paymentData to be sent:", paymentData);
+    const order = {
+        orderItems: cartItems,
+        shippingInfo,
+        itemsPrice: orderInfo.itemsPrice,
+        shippingPrice: orderInfo.shippingPrice,
+        taxPrice: orderInfo.taxPrice,
+        totalPrice: orderInfo.totalPrice,
+    };
+
+    const paymentData = { amount: Math.round(Number(orderInfo.totalPrice) * 100) };
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        console.log("[Payment] submitHandler fired");
-        document.querySelector("#pay_btn").disabled = true;
 
-        let res;
+        if (submitting) return;
+        setSubmitting(true);
+
+        const payBtn = document.querySelector("#pay_btn");
+        if (payBtn) payBtn.disabled = true;
+
         try {
+            if (!stripe || !elements) {
+                alert.error("Payment form isn't ready yet. Please wait a moment and try again.");
+                return;
+            }
+
             const config = { headers: { "Content-Type": "application/json" } };
 
-            console.log("[Payment] POST /api/v1/payment/process ->", paymentData);
-            res = await axiosInstance.post("/api/v1/payment/process", paymentData, config);
-            console.log("[Payment] payment/process response:", res.status, res.data);
+            const res = await axiosInstance.post("/api/v1/payment/process", paymentData, config);
+            const clientSecret = res?.data?.client_secret;
 
-            const clientSecret = res.data.client_secret;
-            console.log("[Payment] clientSecret received:", !!clientSecret);
-
-            if (!stripe || !elements) {
-                console.error("[Payment] stripe or elements not ready:", {
-                    stripe: !!stripe,
-                    elements: !!elements,
-                });
+            if (!clientSecret) {
+                alert.error("Couldn't start payment. Please try again.");
                 return;
             }
 
             const result = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
                     card: elements.getElement(CardNumberElement),
-                    billing_details: { name: user.name, email: user.email },
+                    billing_details: {
+                        name: user?.name || "",
+                        email: user?.email || "",
+                    },
                 },
             });
-            console.log("[Payment] stripe.confirmCardPayment result:", result);
 
             if (result.error) {
-                console.error("[Payment] Stripe confirmCardPayment error:", result.error);
                 alert.error(result.error.message);
-                document.querySelector("#pay_btn").disabled = false;
-            } else if (result.paymentIntent.status === "succeeded") {
-                console.log("[Payment] paymentIntent succeeded:", result.paymentIntent);
+            } else if (result.paymentIntent?.status === "succeeded") {
                 order.paymentInfo = {
                     id: result.paymentIntent.id,
                     status: result.paymentIntent.status,
@@ -120,29 +155,28 @@ const Payment = ({ history }) => {
                 dispatch(createOrder(order));
                 history.push("/success");
             } else {
-                console.warn(
-                    "[Payment] paymentIntent status not succeeded:",
-                    result.paymentIntent.status
-                );
                 alert.error("There is some issue while payment processing");
             }
-        } catch (error) {
-            document.querySelector("#pay_btn").disabled = false;
+        } catch (err) {
+            console.error("[Payment] submitHandler caught error:", err);
 
-            // Log everything about the failure so the 401 (or whatever it is) is visible
-            console.error("[Payment] submitHandler caught error:", error);
-            console.error("[Payment] error.message:", error?.message);
-            console.error("[Payment] error.response:", error?.response);
-            console.error("[Payment] error.response?.status:", error?.response?.status);
-            console.error("[Payment] error.response?.data:", error?.response?.data);
-            console.error("[Payment] error.config (the request that failed):", error?.config);
+            const status = err?.response?.status;
 
-            // Guard against error.response being undefined (this was likely the cause
-            // of the "Uncaught (in promise)" blank-page crash: the old code assumed
-            // error.response always exists).
+            if (status === 401) {
+                // Session expired / cookie not sent — send them to log back in
+                // instead of leaving a broken form on screen.
+                alert.error("Your session has expired. Please log in again to complete payment.");
+                history.push("/login");
+                return;
+            }
+
             const message =
-                error?.response?.data?.message || error?.message || "Payment failed. Please try again.";
+                err?.response?.data?.message || err?.message || "Payment failed. Please try again.";
             alert.error(message);
+        } finally {
+            setSubmitting(false);
+            const btn = document.querySelector("#pay_btn");
+            if (btn) btn.disabled = false;
         }
     };
 
@@ -185,8 +219,13 @@ const Payment = ({ history }) => {
                                 </div>
                             </div>
 
-                            <button id="pay_btn" type="submit" className={styles.submit_btn}>
-                                Pay{` - $${orderInfo && orderInfo.totalPrice}`}
+                            <button
+                                id="pay_btn"
+                                type="submit"
+                                className={styles.submit_btn}
+                                disabled={submitting}
+                            >
+                                {submitting ? "Processing..." : `Pay - $${orderInfo.totalPrice}`}
                             </button>
                         </form>
                     </div>
