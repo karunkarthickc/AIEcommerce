@@ -69,14 +69,14 @@ const Success = ({
                     </div>
 
                     <h1 className={styles.heading}>Payment received</h1>
-                    <p className={styles.sub}>
+                    {/* <p className={styles.sub}>
                         A confirmation has been sent to your email.
-                    </p>
+                    </p> */}
 
-                    <p className={styles.amount}>
+                    {/* <p className={styles.amount}>
                         <span className={styles.currency}>{currency}</span>
                         {formattedAmount}
-                    </p>
+                    </p> */}
 
                     <div className={styles.divider} role="presentation" />
 
