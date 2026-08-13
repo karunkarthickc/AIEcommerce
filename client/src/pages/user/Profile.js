@@ -44,16 +44,16 @@ const Profile = () => {
                                     </div>
 
                                     <div className={styles.body}>
-                                        {/* <div className={styles.avatar_col}>
-                                            <div className={styles.image}>
+                                        <div className={styles.avatar_col}>
+                                            {/* <div className={styles.image}>
                                                 {user && (
                                                     <img
                                                         src={user.avatar.url}
                                                         alt={user?.name}
                                                     />
                                                 )}
-                                            </div>
-                                        </div> */}
+                                            </div> */}
+                                        </div>
 
                                         <div className={styles.info_col}>
                                             <div className={styles.field_row}>
