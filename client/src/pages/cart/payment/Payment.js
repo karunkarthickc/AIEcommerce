@@ -45,6 +45,7 @@ const Payment = ({ history }) => {
 
     useEffect(() => {
         if (error) {
+            console.error("[Payment] newOrder error from redux store:", error);
             alert.error(error);
             dispatch(clearErrors());
         }
@@ -53,27 +54,50 @@ const Payment = ({ history }) => {
     const order = { orderItems: cartItems, shippingInfo };
 
     const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo"));
+    console.log("[Payment] user:", user);
+    console.log("[Payment] orderInfo from sessionStorage:", orderInfo);
+
     if (orderInfo) {
         order.itemsPrice = orderInfo.itemsPrice;
         order.shippingPrice = orderInfo.shippingPrice;
         order.taxPrice = orderInfo.taxPrice;
         order.totalPrice = orderInfo.totalPrice;
+    } else {
+        // This is a likely cause of a blank page: totalPrice access below will throw
+        // synchronously during render if orderInfo is null (e.g. sessionStorage was
+        // cleared, or the user landed on /payment directly without going through
+        // the order confirm step).
+        console.error(
+            "[Payment] orderInfo is missing from sessionStorage — accessing orderInfo.totalPrice next will throw."
+        );
     }
 
     const paymentData = { amount: Math.round(orderInfo.totalPrice * 100) };
+    console.log("[Payment] paymentData to be sent:", paymentData);
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        console.log("[Payment] submitHandler fired");
         document.querySelector("#pay_btn").disabled = true;
 
         let res;
         try {
             const config = { headers: { "Content-Type": "application/json" } };
 
+            console.log("[Payment] POST /api/v1/payment/process ->", paymentData);
             res = await axiosInstance.post("/api/v1/payment/process", paymentData, config);
-            const clientSecret = res.data.client_secret;
+            console.log("[Payment] payment/process response:", res.status, res.data);
 
-            if (!stripe || !elements) return;
+            const clientSecret = res.data.client_secret;
+            console.log("[Payment] clientSecret received:", !!clientSecret);
+
+            if (!stripe || !elements) {
+                console.error("[Payment] stripe or elements not ready:", {
+                    stripe: !!stripe,
+                    elements: !!elements,
+                });
+                return;
+            }
 
             const result = await stripe.confirmCardPayment(clientSecret, {
                 payment_method: {
@@ -81,11 +105,14 @@ const Payment = ({ history }) => {
                     billing_details: { name: user.name, email: user.email },
                 },
             });
+            console.log("[Payment] stripe.confirmCardPayment result:", result);
 
             if (result.error) {
+                console.error("[Payment] Stripe confirmCardPayment error:", result.error);
                 alert.error(result.error.message);
                 document.querySelector("#pay_btn").disabled = false;
             } else if (result.paymentIntent.status === "succeeded") {
+                console.log("[Payment] paymentIntent succeeded:", result.paymentIntent);
                 order.paymentInfo = {
                     id: result.paymentIntent.id,
                     status: result.paymentIntent.status,
@@ -93,11 +120,29 @@ const Payment = ({ history }) => {
                 dispatch(createOrder(order));
                 history.push("/success");
             } else {
+                console.warn(
+                    "[Payment] paymentIntent status not succeeded:",
+                    result.paymentIntent.status
+                );
                 alert.error("There is some issue while payment processing");
             }
         } catch (error) {
             document.querySelector("#pay_btn").disabled = false;
-            alert.error(error.response.data.message);
+
+            // Log everything about the failure so the 401 (or whatever it is) is visible
+            console.error("[Payment] submitHandler caught error:", error);
+            console.error("[Payment] error.message:", error?.message);
+            console.error("[Payment] error.response:", error?.response);
+            console.error("[Payment] error.response?.status:", error?.response?.status);
+            console.error("[Payment] error.response?.data:", error?.response?.data);
+            console.error("[Payment] error.config (the request that failed):", error?.config);
+
+            // Guard against error.response being undefined (this was likely the cause
+            // of the "Uncaught (in promise)" blank-page crash: the old code assumed
+            // error.response always exists).
+            const message =
+                error?.response?.data?.message || error?.message || "Payment failed. Please try again.";
+            alert.error(message);
         }
     };
 
