@@ -81,6 +81,67 @@ const Contact = () => {
       <MetaData title={"Contact"} />
       <Navbar />
       <div className={styles.contact}>
+         {/* Contact Form Section */}
+        <div className={styles.contact_form}>
+          <div className="container">
+            <div className="row g-4 align-items-center">
+              <div className="col-lg-6">
+                <h3>Get In Touch</h3>
+                <p className="text-muted mb-0" style={{ fontSize: "0.95rem" }}>
+                  We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                </p>
+
+                <form className={styles.form}>
+                  <div className={styles.form_group}>
+                    <label htmlFor="name_field">Name</label>
+                    <input
+                      type="text"
+                      id="name_field"
+                      placeholder="Enter your name..."
+                    />
+                  </div>
+                  <div className={styles.form_group}>
+                    <label htmlFor="email_field">Email</label>
+                    <input
+                      type="email"
+                      id="email_field"
+                      placeholder="Enter your email..."
+                    />
+                  </div>
+                  <div className={styles.form_group}>
+                    <label htmlFor="subject_field">Subject</label>
+                    <input
+                      type="text"
+                      id="subject_field"
+                      placeholder="Enter subject..."
+                    />
+                  </div>
+                  <div className={styles.form_group}>
+                    <label htmlFor="message_field">Message</label>
+                    <textarea
+                      id="message_field"
+                      placeholder="Enter your message..."
+                      rows="5"
+                    ></textarea>
+                  </div>
+                  <div className={styles.form_group}>
+                    <button type="submit">Send Message</button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="col-lg-6">
+                <div className={styles.contact_img}>
+                  <img
+                    src={loginImage}
+                    alt="Contact us illustration"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         {/* Page Title */}
         <div className={styles.contact_title}>
           <div className="container">
@@ -148,66 +209,7 @@ const Contact = () => {
           </div>
         </div>
 
-        {/* Contact Form Section */}
-        <div className={styles.contact_form}>
-          <div className="container">
-            <div className="row g-4 align-items-center">
-              <div className="col-lg-6">
-                <h3>Get In Touch</h3>
-                <p className="text-muted mb-0" style={{ fontSize: "0.95rem" }}>
-                  We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-                </p>
-
-                <form className={styles.form}>
-                  <div className={styles.form_group}>
-                    <label htmlFor="name_field">Name</label>
-                    <input
-                      type="text"
-                      id="name_field"
-                      placeholder="Enter your name..."
-                    />
-                  </div>
-                  <div className={styles.form_group}>
-                    <label htmlFor="email_field">Email</label>
-                    <input
-                      type="email"
-                      id="email_field"
-                      placeholder="Enter your email..."
-                    />
-                  </div>
-                  <div className={styles.form_group}>
-                    <label htmlFor="subject_field">Subject</label>
-                    <input
-                      type="text"
-                      id="subject_field"
-                      placeholder="Enter subject..."
-                    />
-                  </div>
-                  <div className={styles.form_group}>
-                    <label htmlFor="message_field">Message</label>
-                    <textarea
-                      id="message_field"
-                      placeholder="Enter your message..."
-                      rows="5"
-                    ></textarea>
-                  </div>
-                  <div className={styles.form_group}>
-                    <button type="submit">Send Message</button>
-                  </div>
-                </form>
-              </div>
-
-              <div className="col-lg-6">
-                <div className={styles.contact_img}>
-                  <img
-                    src={loginImage}
-                    alt="Contact us illustration"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+       
       </div>
       <Footer />
     </Fragment>
