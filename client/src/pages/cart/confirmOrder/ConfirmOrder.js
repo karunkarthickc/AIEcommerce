@@ -115,6 +115,7 @@ const ConfirmOrder = ({ history }) => {
                                     id="checkout_btn"
                                     className={styles.checkout_btn}
                                     onClick={processToPayment}
+                                    disabled={true}
                                 >
                                     Proceed to Payment
                                 </button>
