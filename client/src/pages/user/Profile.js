@@ -44,7 +44,7 @@ const Profile = () => {
                                     </div>
 
                                     <div className={styles.body}>
-                                        <div className={styles.avatar_col}>
+                                        {/* <div className={styles.avatar_col}>
                                             <div className={styles.image}>
                                                 {user && (
                                                     <img
@@ -53,7 +53,7 @@ const Profile = () => {
                                                     />
                                                 )}
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                         <div className={styles.info_col}>
                                             <div className={styles.field_row}>
