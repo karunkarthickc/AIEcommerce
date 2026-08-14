@@ -71,7 +71,7 @@ const Product = ({ product }) => {
                 ({product?.numOfReviews ?? 0})
               </span>
             </div>
-            <div className={styles.price}>${product?.price}</div>
+            <div className={styles.price}>₹{product?.price}</div>
           </div>
 
           <button onClick={addToCart} className={styles.addBtn}>
