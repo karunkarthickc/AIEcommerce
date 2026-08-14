@@ -225,7 +225,7 @@ const Payment = ({ history }) => {
                                 className={styles.submit_btn}
                                 disabled={submitting}
                             >
-                                {submitting ? "Processing..." : `Pay - $${orderInfo.totalPrice}`}
+                                {submitting ? "Processing..." : `Pay - ₹${orderInfo.totalPrice}`}
                             </button>
                         </form>
                     </div>

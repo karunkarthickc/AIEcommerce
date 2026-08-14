@@ -99,7 +99,7 @@ const Cart = ({ history }) => {
                                                 {item.name}
                                             </Link>
                                             <span className={styles.unit}>
-                                                ${item.price.toFixed(2)} each
+                                                ₹{item.price.toFixed(2)} each
                                             </span>
                                         </div>
 
@@ -141,7 +141,7 @@ const Cart = ({ history }) => {
                                         </div>
 
                                         <div className={styles.price_cell}>
-                                            $
+                                            ₹
                                             {(
                                                 item.price * item.quantity
                                             ).toFixed(2)}
@@ -189,7 +189,7 @@ const Cart = ({ history }) => {
                                     className={`${styles.r_row} ${styles.total}`}
                                 >
                                     <span>Est. Total</span>
-                                    <span>${estTotal.toFixed(2)}</span>
+                                    <span>₹{estTotal.toFixed(2)}</span>
                                 </div>
 
                                 <button

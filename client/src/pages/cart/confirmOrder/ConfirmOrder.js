@@ -75,12 +75,12 @@ const ConfirmOrder = ({ history }) => {
                                         <div className={styles.meta}>
                                             <Link to={`/products/${item.product}`}>{item.name}</Link>
                                             <span className={styles.unit}>
-                                                {item.quantity} &times; ${item.price.toFixed(2)}
+                                                {item.quantity} &times; ₹{item.price.toFixed(2)}
                                             </span>
                                         </div>
 
                                         <div className={styles.price_cell}>
-                                            ${(item.quantity * item.price).toFixed(2)}
+                                            ₹{(item.quantity * item.price).toFixed(2)}
                                         </div>
                                     </div>
                                 ))}
@@ -96,19 +96,19 @@ const ConfirmOrder = ({ history }) => {
 
                                 <div className={styles.r_row}>
                                     <span>Subtotal</span>
-                                    <span>${itemsPrice.toFixed(2)}</span>
+                                    <span>₹{itemsPrice.toFixed(2)}</span>
                                 </div>
                                 <div className={styles.r_row}>
                                     <span>Shipping</span>
-                                    <span>${shippingPrice.toFixed(2)}</span>
+                                    <span>₹{shippingPrice.toFixed(2)}</span>
                                 </div>
                                 <div className={styles.r_row}>
                                     <span>Tax</span>
-                                    <span>${taxPrice.toFixed(2)}</span>
+                                    <span>₹{taxPrice.toFixed(2)}</span>
                                 </div>
                                 <div className={`${styles.r_row} ${styles.total}`}>
                                     <span>Total</span>
-                                    <span>${totalPrice}</span>
+                                    <span>₹{totalPrice}</span>
                                 </div>
 
                                 <button
