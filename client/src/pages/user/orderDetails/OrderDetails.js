@@ -219,7 +219,7 @@ const OrderDetails = ({ match }) => {
                                                     </span>
                                                     <span className={styles.field_label}>Total</span>
                                                     <span className={styles.field_value}>
-                                                        ${totalPrice}
+                                                        ₹{totalPrice}
                                                     </span>
                                                 </div>
                                                 <div className={styles.field_row}>
@@ -258,12 +258,12 @@ const OrderDetails = ({ match }) => {
                                                                 {item.name}
                                                             </Link>
                                                             <span className={styles.unit}>
-                                                                {item.quantity} &times; ${item.price}
+                                                                {item.quantity} &times; ₹{item.price}
                                                             </span>
                                                         </div>
 
                                                         <div className={styles.price_cell}>
-                                                            $
+                                                            ₹
                                                             {(
                                                                 item.quantity * item.price
                                                             ).toFixed(2)}

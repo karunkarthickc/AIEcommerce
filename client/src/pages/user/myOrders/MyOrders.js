@@ -98,7 +98,7 @@ const MyOrders = () => {
                                                             {order?.orderItems.length}
                                                         </span>
                                                         <span className={styles.amount}>
-                                                            ${order?.totalPrice}
+                                                            ₹{order?.totalPrice}
                                                         </span>
                                                         <span>
                                                             <span
