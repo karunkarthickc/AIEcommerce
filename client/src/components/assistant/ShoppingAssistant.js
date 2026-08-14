@@ -7,7 +7,7 @@ import { axiosInstance } from "../../config";
 import "./ShoppingAssistant.scss";
 
 const SUGGESTIONS = [
-  "Show me running shoes under $50",
+  "Show me running shoes under ₹5000",
   "What's the return policy on jackets?",
   "Track my last order",
   "Recommend a gift for a yoga lover",
