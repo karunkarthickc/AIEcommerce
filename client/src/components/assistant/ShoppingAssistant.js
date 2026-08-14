@@ -140,7 +140,7 @@ const ShoppingAssistant = () => {
                         )}
                         <div>
                           <span className="name">{p.name}</span>
-                          <span className="price">${p.price}</span>
+                          <span className="price">₹{p.price}</span>
                         </div>
                       </Link>
                     ))}
