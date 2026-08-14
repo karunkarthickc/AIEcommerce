@@ -79,7 +79,7 @@ const Fashion = ({ products, type }) => {
                                 <div className={styles.info}>
                                     <p className={styles.name}>{product?.name}</p>
                                     <p className={styles.price}>
-                                        ${Number(product?.price).toFixed(2)}
+                                        ₹{Number(product?.price).toFixed(2)}
                                     </p>
                                 </div>
                             </Link>
