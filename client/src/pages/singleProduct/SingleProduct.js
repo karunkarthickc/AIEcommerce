@@ -221,7 +221,7 @@ const SingleProduct = ({ match }) => {
                                 </div>
 
                                 <p className={styles.price}>
-                                    <span className={styles.currency}>$</span>
+                                    <span className={styles.currency}>₹</span>
                                     {product?.price}
                                 </p>
 
