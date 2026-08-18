@@ -1,77 +1,229 @@
+// Banner.module.scss
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap");
+
 .banner {
-    .swiper1 {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: var(--font-poppins);
-        background-image: url("../../../assets/banner.png");
+    --ink: #1b1b16;
+    --paper: #ece4d4;
+    --moss: #48563e;
+    --sun: #e7a93e;
+    --clay: #a8503a;
+    --line: rgba(27, 27, 22, 0.16);
 
-        .slider_text {
-            margin-top: 30px;
-            p {
-                color: var(--color-gray);
-                font-weight: 700;
-                letter-spacing: 1px;
-            }
-            h1 {
-                color: black;
-                line-height: 70px;
-                font-size: 50px;
-                font-weight: 700;
-                letter-spacing: 1px;
-            }
-            div {
-                margin-top: 30px;
-                a {
-                    border: none;
-                    text-decoration: none;
-                    background-color: brown;
-                    padding: 0.5rem 1rem;
-                    color: #fff;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                }
-            }
-        }
+    position: relative;
+    background: var(--paper);
+    color: var(--ink);
+    padding-left: 44px; // room for season strip
+
+    @media (max-width: 768px) {
+        padding-left: 0;
+        padding-top: 40px;
     }
+}
 
-    .swiper2 {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: var(--font-poppins);
-        background-image: url("https://res.cloudinary.com/mehedi08h/image/upload/v1648866794/shopx/banner/2_rvde7n.jpg");
-        background-size: cover;
-        background-repeat: no-repeat;
+// signature element: rotated running-head label along the left edge
+.seasonStrip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    border-right: 1px solid var(--line);
 
-        .slider_text {
-            margin-top: 30px;
-            p {
-                color: #fff;
-                font-weight: 700;
-                letter-spacing: 1px;
-            }
-            h1 {
-                color: black;
-                line-height: 70px;
-                font-size: 50px;
-                font-weight: 700;
-                letter-spacing: 1px;
-            }
-            div {
-                margin-top: 30px;
-                a {
-                    border: none;
-                    text-decoration: none;
-                    background-color: brown;
-                    padding: 0.5rem 1rem;
-                    color: #fff;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                }
-            }
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+        position: static;
+        writing-mode: horizontal-tb;
+        transform: none;
+        width: auto;
+        height: 40px;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+        padding: 0 20px;
+    }
+}
+
+.swiper {
+    width: 100%;
+}
+
+.slide {
+    padding: 96px 0 72px;
+
+    @media (max-width: 768px) {
+        padding: 56px 0 40px;
+    }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 48px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+}
+
+.eyebrow {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.65;
+    margin: 0 0 20px;
+}
+
+.heading {
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 32px;
+
+    em {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--moss);
+    }
+}
+
+.slide.clay .heading em { color: var(--clay); }
+.slide.sun .heading em { color: var(--sun); }
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ink);
+    transition: gap 0.25s ease, opacity 0.25s ease;
+
+    svg { transition: transform 0.25s ease; }
+
+    &:hover {
+        gap: 14px;
+        opacity: 0.75;
+    }
+}
+
+// offset two-layer frame instead of a flat image box
+.imageCol {
+    display: flex;
+    justify-content: center;
+}
+
+.frame {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 4 / 5;
+}
+
+.frameBack {
+    position: absolute;
+    inset: 14px -14px -14px 14px;
+    background: var(--moss);
+    z-index: 0;
+}
+
+.slide.clay .frameBack { background: var(--clay); }
+.slide.sun .frameBack { background: var(--sun); }
+
+.frameImage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-size: cover;
+    background-position: center;
+    background-color: #d8d0bd; // shows briefly while the image loads
+}
+
+.swatch {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 2;
+    background: var(--paper);
+    padding: 6px 10px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+// bottom control bar: progress rule + fraction + arrows, replaces dot pagination
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 28px;
+}
+
+.progress {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+    position: relative;
+}
+
+.progressFill {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 1px;
+    background: var(--ink);
+    transition: width 0.4s ease;
+}
+
+.count {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    display: flex;
+    gap: 4px;
+    opacity: 0.7;
+}
+
+.countCurrent { color: var(--ink); opacity: 1; }
+.countDivider { opacity: 0.4; }
+
+.arrows {
+    display: flex;
+    gap: 8px;
+
+    button {
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        background: transparent;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+
+        &:hover {
+            background: var(--ink);
+            color: var(--paper);
+            border-color: var(--ink);
         }
     }
 }
