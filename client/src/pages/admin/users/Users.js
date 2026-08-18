@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useAlert } from "react-alert";
 import { Table } from "react-bootstrap";
-import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEye, AiOutlineTeam } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -41,6 +41,7 @@ const Users = ({ history }) => {
     const deleteUserHandler = (id) => {
         dispatch(deleteUser(id));
     };
+
     return (
         <div className={styles.users}>
             <MetaData title={"All Users"} />
@@ -50,68 +51,87 @@ const Users = ({ history }) => {
                 </div>
                 <div className="col-md-10">
                     <Navbar />
-                    <div className={`${styles.table} container mt-3`}>
-                        {loading ? (
-                            <>
+                    <div className={styles.content}>
+                        <header className={styles.pageHeader}>
+                            <div>
+                                <p className={styles.eyebrow}>Access</p>
+                                <h1>All users</h1>
+                                <p className={styles.subhead}>
+                                    {users?.length ?? 0} account{users?.length === 1 ? "" : "s"} registered
+                                </p>
+                            </div>
+                        </header>
+
+                        <div className={styles.tableCard}>
+                            {loading ? (
                                 <Loader />
-                            </>
-                        ) : (
-                            <>
-                                <Table responsive>
+                            ) : users?.length ? (
+                                <Table responsive className={styles.table}>
                                     <thead>
                                         <tr>
+                                            <th>User</th>
                                             <th>ID</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
                                             <th>Email</th>
                                             <th>Role</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
-                                        {users?.map((user) => (
+                                        {users.map((user) => (
                                             <tr key={user?._id}>
-                                                <td>{user?._id}</td>
                                                 <td>
-                                                    <img
-                                                        style={{
-                                                            height: "40px",
-                                                            width: "40px",
-                                                        }}
-                                                        src={user?.avatar.url}
-                                                        alt={user?.name}
-                                                    />
+                                                    <div className={styles.userCell}>
+                                                        <img
+                                                            className={styles.avatar}
+                                                            src={user?.avatar?.url}
+                                                            alt={user?.name}
+                                                        />
+                                                        <span className={styles.userName}>{user?.name}</span>
+                                                    </div>
                                                 </td>
-                                                <td>{user?.name}</td>
+                                                <td>
+                                                    <span className={styles.idText}>{user?._id}</span>
+                                                </td>
                                                 <td>{user?.email}</td>
-                                                <td>{user?.role}</td>
-                                                <td className={styles.actions}>
-                                                    <Link
-                                                        to={`/admin/user/details/${user._id}`}
+                                                <td>
+                                                    <span
+                                                        className={`${styles.badge} ${
+                                                            user?.role === "admin" ? styles.badgeAdmin : styles.badgeUser
+                                                        }`}
                                                     >
-                                                        <AiOutlineEye
-                                                            size={20}
-                                                        />
-                                                    </Link>
-                                                    <button
-                                                        onClick={() =>
-                                                            deleteUserHandler(
-                                                                user._id
-                                                            )
-                                                        }
-                                                    >
-                                                        <AiOutlineDelete
-                                                            size={20}
-                                                        />
-                                                    </button>
+                                                        {user?.role}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div className={styles.actions}>
+                                                        <Link
+                                                            to={`/admin/user/details/${user._id}`}
+                                                            className={`${styles.actionBtn} ${styles.view}`}
+                                                            aria-label="View user"
+                                                        >
+                                                            <AiOutlineEye size={16} />
+                                                        </Link>
+                                                        <button
+                                                            className={`${styles.actionBtn} ${styles.delete}`}
+                                                            onClick={() => deleteUserHandler(user._id)}
+                                                            aria-label="Delete user"
+                                                        >
+                                                            <AiOutlineDelete size={16} />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </Table>
-                            </>
-                        )}
+                            ) : (
+                                <div className={styles.emptyState}>
+                                    <AiOutlineTeam size={32} />
+                                    <p>No users yet</p>
+                                    <span>Registered accounts will show up here.</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

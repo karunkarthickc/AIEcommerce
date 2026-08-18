@@ -1,81 +1,69 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { MdOutlineDashboard, MdOutlineFavoriteBorder } from "react-icons/md";
 import { BiUserCircle } from "react-icons/bi";
 import { FiPlusSquare } from "react-icons/fi";
+import { HiTemplate } from "react-icons/hi";
+import { AiFillStar } from "react-icons/ai";
 
 import styles from "./Sidebar.module.scss";
-import { HiTemplate } from "react-icons/hi";
-import { AiFillStar, AiOutlineHome } from "react-icons/ai";
+
+const NAV_SECTIONS = [
+    {
+        label: "Main",
+        items: [
+            { to: "/admin", label: "Dashboard", icon: MdOutlineDashboard, end: true },
+        ],
+    },
+    {
+        label: "List",
+        items: [
+            { to: "/admin/products", label: "Products", icon: HiTemplate },
+            { to: "/admin/orders", label: "Orders", icon: MdOutlineFavoriteBorder },
+            { to: "/admin/users", label: "Users", icon: BiUserCircle },
+            { to: "/admin/reviews", label: "Reviews", icon: AiFillStar },
+        ],
+    },
+    {
+        label: "Service",
+        items: [
+            { to: "/admin/products/new", label: "Add Product", icon: FiPlusSquare },
+        ],
+    },
+];
 
 const Sidebar = () => {
     return (
-        <div className={styles.sidebar}>
-            <img
-                style={{ height: "40px" }}
-                src="https://res.cloudinary.com/mehedi08h/image/upload/v1648446111/shopx/logo2_diozsh.png"
-                alt=""
-            />
-            <div>
-                <span>Main</span>
-                <div className="mt-1">
-                    <li>
-                        <Link to="/">
-                            <AiOutlineHome className="me-3" size={25} />
-                            Home
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/admin">
-                            <MdOutlineDashboard className="me-3" size={25} />
-                            Dashboard
-                        </Link>
-                    </li>
-                </div>
+        <aside className={styles.sidebar}>
+            <div className={styles.brand}>
+                <span className={styles.mark}>S</span>
+                <span className={styles.brandName}>ShopX</span>
             </div>
-            <div>
-                <span>List</span>
-                <div className="mt-1">
-                    <li>
-                        <Link to="/admin/products">
-                            <HiTemplate className="me-3" size={25} /> Products
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/admin/orders">
-                            <MdOutlineFavoriteBorder
-                                className="me-3"
-                                size={25}
-                            />
-                            Orders
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/admin/users">
-                            <BiUserCircle className="me-3" size={25} />
-                            Users
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/admin/reviews">
-                            <AiFillStar className="me-3" size={25} />
-                            Reviews
-                        </Link>
-                    </li>
-                </div>
-            </div>
-            <div>
-                <span>Service</span>
-                <div className="mt-1">
-                    <li>
-                        <Link to="/admin/products/new">
-                            <FiPlusSquare className="me-3" size={25} />
-                            Add Product
-                        </Link>
-                    </li>
-                </div>
-            </div>
-        </div>
+
+            <nav className={styles.nav}>
+                {NAV_SECTIONS.map((section) => (
+                    <div key={section.label} className={styles.section}>
+                        <span className={styles.sectionLabel}>{section.label}</span>
+                        <ul>
+                            {section.items.map(({ to, label, icon: Icon, end }) => (
+                                <li key={to}>
+                                    <NavLink
+                                        to={to}
+                                        end={end}
+                                        className={({ isActive }) =>
+                                            isActive ? styles.active : undefined
+                                        }
+                                    >
+                                        <Icon size={19} />
+                                        <span>{label}</span>
+                                    </NavLink>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </nav>
+        </aside>
     );
 };
 

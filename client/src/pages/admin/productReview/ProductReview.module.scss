@@ -1,26 +1,195 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap");
+
 .review {
-    font-family: var(--font-poppins);
-    .form_group {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --ink: #10192e;
+    --ink-soft: #5b6478;
+    --border: #e4e7ef;
+    --star: #b45309;
+    --delete: #dc2626;
+    --delete-bg: #fdeeec;
+
+    width: 100%;
+    min-height: 88.5vh;
+    margin: 0;
+    background: var(--bg);
+    font-family: "Inter", sans-serif;
+    color: var(--ink);
+
+    .content {
+        padding: 32px;
+        max-width: 780px;
+        margin: 0 auto;
+    }
+
+    .pageHeader {
+        text-align: center;
+        margin-bottom: 24px;
+
+        .eyebrow {
+            margin: 0 0 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-family: "Space Grotesk", sans-serif;
+            font-weight: 600;
+            font-size: 26px;
+        }
+
+        .subhead {
+            margin: 0;
+            font-size: 14px;
+            color: var(--ink-soft);
+        }
+    }
+
+    .searchBar {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        gap: 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 6px;
+        margin-bottom: 24px;
 
         input {
-            height: 35px;
-            margin-top: 10px;
-            border-radius: 20px;
+            flex: 1;
+            border: none;
             outline: none;
-            padding: 0.5rem 1rem;
-            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: "JetBrains Mono", monospace;
+            background: transparent;
+            color: var(--ink);
+
+            &::placeholder {
+                color: var(--ink-soft);
+                font-family: "Inter", sans-serif;
+            }
         }
 
         button {
             border: none;
-            margin-top: 10px;
-            padding: 5px 15px;
-            border-radius: 20px;
-            background-color: burlywood;
-            color: black;
+            border-radius: 7px;
+            padding: 0 20px;
+            background: var(--ink);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+
+            &:hover {
+                background: #1f2a45;
+            }
         }
+    }
+
+    .tableCard {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin: 0;
+
+        thead th {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 16px;
+            background: transparent;
+        }
+
+        tbody tr td {
+            padding: 12px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+    }
+
+    .idText {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--ink-soft);
+    }
+
+    .stars {
+        display: inline-flex;
+        gap: 2px;
+        color: var(--star);
+    }
+
+    .commentCell {
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .actionBtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.12s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+    }
+
+    .delete {
+        color: var(--delete);
+        background: var(--delete-bg);
+    }
+
+    .emptyState {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 56px 20px;
+        color: var(--ink-soft);
+        text-align: center;
+
+        p {
+            margin: 6px 0 0;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        span {
+            font-size: 13px;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .review .content {
+        padding: 20px;
     }
 }

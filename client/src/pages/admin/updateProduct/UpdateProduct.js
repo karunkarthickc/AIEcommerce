@@ -127,6 +127,7 @@ const UpdateProduct = ({ history }) => {
             reader.readAsDataURL(file);
         });
     };
+
     return (
         <div className={styles.new_product}>
             <MetaData title={"Update Products"} />
@@ -136,185 +137,139 @@ const UpdateProduct = ({ history }) => {
                 </div>
                 <div className="col-md-10">
                     <Navbar />
-                    <div className={styles.product_input}>
-                        <div className={styles.form}>
-                            <h4>Update Product</h4>
-                            <form onSubmit={submitHandler}>
-                                {/* name section  */}
-                                <div className={styles.from_group}>
+                    <div className={styles.content}>
+                        <header className={styles.pageHeader}>
+                            <p className={styles.eyebrow}>Catalog</p>
+                            <h1>Update product</h1>
+                            <p className={styles.subhead}>
+                                Editing details for {product?.name || "this product"}.
+                            </p>
+                        </header>
+
+                        <form onSubmit={submitHandler} className={styles.form}>
+                            <section className={styles.section}>
+                                <h2>Basic details</h2>
+                                <div className={styles.field}>
                                     <label htmlFor="name_field">Name</label>
                                     <input
                                         type="text"
                                         id="name_field"
                                         value={name}
-                                        onChange={(e) =>
-                                            setName(e.target.value)
-                                        }
+                                        onChange={(e) => setName(e.target.value)}
                                     />
                                 </div>
-
-                                {/* descriptio section  */}
-                                <div className={styles.from_group}>
-                                    <label htmlFor="description_field">
-                                        Description
-                                    </label>
+                                <div className={styles.field}>
+                                    <label htmlFor="description_field">Description</label>
                                     <textarea
                                         id="description_field"
-                                        rows="8"
+                                        rows="6"
                                         value={description}
-                                        onChange={(e) =>
-                                            setDescription(e.target.value)
-                                        }
+                                        onChange={(e) => setDescription(e.target.value)}
                                     ></textarea>
                                 </div>
+                            </section>
 
-                                {/* category & stock section  */}
-                                <div className="row">
-                                    <div className="col-md-7">
-                                        <div className={styles.from_group}>
-                                            <label htmlFor="category_field">
-                                                Category
-                                            </label>
-                                            <select
-                                                id="category_field"
-                                                value={category}
-                                                onChange={(e) =>
-                                                    setCategory(e.target.value)
-                                                }
-                                            >
-                                                {categories.map((category) => (
-                                                    <option
-                                                        key={category}
-                                                        value={category}
-                                                    >
-                                                        {category}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-5">
-                                        <div className={styles.from_group}>
-                                            <label htmlFor="stock_field">
-                                                Stock
-                                            </label>
-                                            <input
-                                                type="number"
-                                                id="stock_field"
-                                                value={stock}
-                                                onChange={(e) =>
-                                                    setStock(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* seller name & price section  */}
-                                <div className="row">
-                                    <div className="col-md-7">
-                                        <div className={styles.from_group}>
-                                            <label htmlFor="seller_field">
-                                                Seller Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="seller_field"
-                                                value={seller}
-                                                onChange={(e) =>
-                                                    setSeller(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="col-md-5">
-                                        <div className={styles.from_group}>
-                                            <label htmlFor="price_field">
-                                                Price
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="price_field"
-                                                value={price}
-                                                onChange={(e) =>
-                                                    setPrice(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* types  */}
-
-                                <div className={styles.from_group}>
-                                    <label htmlFor="type_field">Types</label>
-                                    <select
-                                        id="type_field"
-                                        value={type}
-                                        onChange={(e) =>
-                                            setType(e.target.value)
-                                        }
-                                    >
-                                        {types.map((type) => (
-                                            <option key={type} value={type}>
-                                                {type}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* image section  */}
-
-                                <div className={styles.from_group}>
-                                    <label>Images</label>
-
-                                    <div className="image_file ms-2">
-                                        <input
-                                            type="file"
-                                            name="product_images"
-                                            id="customFile"
-                                            onChange={onChange}
-                                            multiple
-                                        />
-                                        <AiOutlineCloudUpload size={20} />
-                                    </div>
-
-                                    <div>
-                                        {oldImages &&
-                                            oldImages.map((img) => (
-                                                <img
-                                                    key={img}
-                                                    src={img.url}
-                                                    alt={img.url}
-                                                    className="mt-3 mr-2"
-                                                    width="55"
-                                                    height="52"
-                                                />
+                            <section className={styles.section}>
+                                <h2>Organization</h2>
+                                <div className={styles.row2}>
+                                    <div className={styles.field}>
+                                        <label htmlFor="category_field">Category</label>
+                                        <select
+                                            id="category_field"
+                                            value={category}
+                                            onChange={(e) => setCategory(e.target.value)}
+                                        >
+                                            {categories.map((category) => (
+                                                <option key={category} value={category}>
+                                                    {category}
+                                                </option>
                                             ))}
-
-                                        {imagesPreview.map((img) => (
-                                            <img
-                                                src={img}
-                                                key={img}
-                                                alt="Images Preview"
-                                                className="mt-3 mr-2"
-                                                width="55"
-                                                height="52"
-                                            />
-                                        ))}
+                                        </select>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <label htmlFor="type_field">Type</label>
+                                        <select
+                                            id="type_field"
+                                            value={type}
+                                            onChange={(e) => setType(e.target.value)}
+                                        >
+                                            {types.map((type) => (
+                                                <option key={type} value={type}>
+                                                    {type}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
+                            </section>
 
-                                <div className={styles.from_group}>
-                                    <button type="submit">
-                                        {loading ? (
-                                            <ButtonLoader />
-                                        ) : (
-                                            "Update Product"
-                                        )}
-                                    </button>
+                            <section className={styles.section}>
+                                <h2>Pricing &amp; inventory</h2>
+                                <div className={styles.row2}>
+                                    <div className={styles.field}>
+                                        <label htmlFor="price_field">Price</label>
+                                        <input
+                                            type="text"
+                                            id="price_field"
+                                            value={price}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className={styles.field}>
+                                        <label htmlFor="stock_field">Stock</label>
+                                        <input
+                                            type="number"
+                                            id="stock_field"
+                                            value={stock}
+                                            onChange={(e) => setStock(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
+                                <div className={styles.field}>
+                                    <label htmlFor="seller_field">Seller name</label>
+                                    <input
+                                        type="text"
+                                        id="seller_field"
+                                        value={seller}
+                                        onChange={(e) => setSeller(e.target.value)}
+                                    />
+                                </div>
+                            </section>
+
+                            <section className={styles.section}>
+                                <h2>Images</h2>
+                                <label htmlFor="customFile" className={styles.dropzone}>
+                                    <AiOutlineCloudUpload size={26} />
+                                    <span>Click to replace images</span>
+                                    <small>Uploading new images replaces the current set</small>
+                                    <input
+                                        type="file"
+                                        name="product_images"
+                                        id="customFile"
+                                        onChange={onChange}
+                                        multiple
+                                        className={styles.fileInput}
+                                    />
+                                </label>
+
+                                {(oldImages?.length > 0 || imagesPreview.length > 0) && (
+                                    <div className={styles.previewGrid}>
+                                        {oldImages?.map((img) => (
+                                            <img key={img.url} src={img.url} alt="Current product" />
+                                        ))}
+                                        {imagesPreview.map((img) => (
+                                            <img src={img} key={img} alt="New preview" />
+                                        ))}
+                                    </div>
+                                )}
+                            </section>
+
+                            <div className={styles.formFooter}>
+                                <button type="submit" className={styles.submitBtn} disabled={loading}>
+                                    {loading ? <ButtonLoader /> : "Update product"}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

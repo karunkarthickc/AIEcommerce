@@ -14,18 +14,10 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
         images = req.body.images;
     }
 
-    let imagesLinks = [];
-
-    for (let i = 0; i < images.length; i++) {
-        const result = await cloudinary.v2.uploader.upload(images[i], {
-            folder: "shopx/products",
-        });
-
-        imagesLinks.push({
-            public_id: result.public_id,
-            url: result.secure_url,
-        });
-    }
+    const imagesLinks = images.map((url) => ({
+        public_id: url,
+        url: url,
+    }));
 
     req.body.images = imagesLinks;
     req.body.user = req.user.id;

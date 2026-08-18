@@ -10,11 +10,19 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "./Orders.module.scss";
 import Loader from "../../../components/loader/Loader";
 import { Table } from "react-bootstrap";
-import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEye, AiOutlineShoppingCart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { DELETE_ORDER_RESET } from "../../../constants/orderConstants";
 import Navbar from "../../../components/admin/navbar/Navbar";
 import MetaData from "../../../components/MetaData";
+
+const statusStyleKey = (status) => {
+    const normalized = status?.toLowerCase();
+    if (normalized === "delivered") return "badgeDelivered";
+    if (normalized === "shipped") return "badgeShipped";
+    if (normalized === "processing") return "badgeProcessing";
+    return "badgeDefault";
+};
 
 const Orders = ({ history }) => {
     const alert = useAlert();
@@ -42,6 +50,11 @@ const Orders = ({ history }) => {
         dispatch(deleteOrder(id));
     };
 
+    const formatAmount = (amount) =>
+        typeof amount === "number"
+            ? amount.toLocaleString("en-US", { style: "currency", currency: "INR" })
+            : amount;
+
     return (
         <div className={styles.orders}>
             <MetaData title={"Order"} />
@@ -51,63 +64,80 @@ const Orders = ({ history }) => {
                 </div>
                 <div className="col-md-10">
                     <Navbar />
-                    <div className={`${styles.table} container mt-3`}>
-                        {loading ? (
-                            <>
+                    <div className={styles.content}>
+                        <header className={styles.pageHeader}>
+                            <div>
+                                <p className={styles.eyebrow}>Fulfillment</p>
+                                <h1>All orders</h1>
+                                <p className={styles.subhead}>
+                                    {orders?.length ?? 0} order{orders?.length === 1 ? "" : "s"} placed
+                                </p>
+                            </div>
+                        </header>
+
+                        <div className={styles.tableCard}>
+                            {loading ? (
                                 <Loader />
-                            </>
-                        ) : (
-                            <>
-                                <Table responsive>
+                            ) : orders?.length ? (
+                                <Table responsive className={styles.table}>
                                     <thead>
                                         <tr>
                                             <th>Order ID</th>
-                                            <th>No of Items</th>
+                                            <th>Items</th>
                                             <th>Amount</th>
-                                            <th>Address</th>
+                                            <th>City</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
-                                        {orders?.map((order) => (
+                                        {orders.map((order) => (
                                             <tr key={order?._id}>
-                                                <td>{order?._id}</td>
                                                 <td>
-                                                    {order.orderItems.length}
+                                                    <span className={styles.idText}>{order?._id}</span>
                                                 </td>
-                                                <td>{order?.totalPrice}</td>
+                                                <td>{order?.orderItems?.length}</td>
+                                                <td className={styles.amountCell}>
+                                                    {formatAmount(order?.totalPrice)}
+                                                </td>
+                                                <td>{order?.shippingInfo?.city}</td>
                                                 <td>
-                                                    {order?.shippingInfo.city}
+                                                    <span
+                                                        className={`${styles.badge} ${styles[statusStyleKey(order?.orderStatus)]}`}
+                                                    >
+                                                        {order?.orderStatus}
+                                                    </span>
                                                 </td>
-                                                <td>{order?.orderStatus}</td>
-                                                <td className={styles.actions}>
-                                                    <Link
-                                                        to={`/admin/order/${order._id}`}
-                                                    >
-                                                        <AiOutlineEye
-                                                            size={20}
-                                                        />
-                                                    </Link>
-                                                    <button
-                                                        onClick={() =>
-                                                            deleteOrderHandler(
-                                                                order._id
-                                                            )
-                                                        }
-                                                    >
-                                                        <AiOutlineDelete
-                                                            size={20}
-                                                        />
-                                                    </button>
+                                                <td>
+                                                    <div className={styles.actions}>
+                                                        <Link
+                                                            to={`/admin/order/${order._id}`}
+                                                            className={`${styles.actionBtn} ${styles.view}`}
+                                                            aria-label="View order"
+                                                        >
+                                                            <AiOutlineEye size={16} />
+                                                        </Link>
+                                                        <button
+                                                            className={`${styles.actionBtn} ${styles.delete}`}
+                                                            onClick={() => deleteOrderHandler(order._id)}
+                                                            aria-label="Delete order"
+                                                        >
+                                                            <AiOutlineDelete size={16} />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </Table>
-                            </>
-                        )}
+                            ) : (
+                                <div className={styles.emptyState}>
+                                    <AiOutlineShoppingCart size={32} />
+                                    <p>No orders yet</p>
+                                    <span>Orders placed by customers will show up here.</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

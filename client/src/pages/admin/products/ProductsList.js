@@ -13,10 +13,11 @@ import {
 import Loader from "../../../components/loader/Loader";
 import { Link } from "react-router-dom";
 
-import { AiOutlineDelete, AiOutlineEdit, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineDelete, AiOutlineEdit, AiOutlineEye, AiOutlineInbox } from "react-icons/ai";
 import { DELETE_PRODUCT_RESET } from "../../../constants/productsConstants";
 import Navbar from "../../../components/admin/navbar/Navbar";
 import MetaData from "../../../components/MetaData";
+
 const ProductsList = ({ history }) => {
     const alert = useAlert();
     const dispatch = useDispatch();
@@ -49,6 +50,12 @@ const ProductsList = ({ history }) => {
     const deleteProductHandler = (id) => {
         dispatch(deleteProduct(id));
     };
+
+    const formatPrice = (price) =>
+        typeof price === "number"
+            ? price.toLocaleString("en-US", { style: "currency", currency: "INR" })
+            : price;
+
     return (
         <div className={styles.products}>
             <MetaData title={"All Products"} />
@@ -58,83 +65,106 @@ const ProductsList = ({ history }) => {
                 </div>
                 <div className="col-md-10">
                     <Navbar />
-                    <div className={`${styles.table} container mt-3`}>
-                        <div>
-                            <Table responsive>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Stock</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                {loading ? (
-                                    <>
-                                        <Loader />
-                                    </>
-                                ) : (
-                                    <>
-                                        <tbody>
-                                            {products?.map((product) => (
-                                                <tr key={product?._id}>
-                                                    <td>{product?._id}</td>
-                                                    <td>
+                    <div className={styles.content}>
+                        <header className={styles.pageHeader}>
+                            <div>
+                                <p className={styles.eyebrow}>Catalog</p>
+                                <h1>All products</h1>
+                                <p className={styles.subhead}>
+                                    {products?.length ?? 0} product{products?.length === 1 ? "" : "s"} in your store
+                                </p>
+                            </div>
+                            <Link to="/admin/products/new" className={styles.addBtn}>
+                                + Add product
+                            </Link>
+                        </header>
+
+                        <div className={styles.tableCard}>
+                            {loading ? (
+                                <Loader />
+                            ) : products?.length ? (
+                                <Table responsive className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>ID</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {products.map((product) => (
+                                            <tr key={product?._id}>
+                                                <td>
+                                                    <div className={styles.productCell}>
                                                         <img
-                                                            style={{
-                                                                height: "40px",
-                                                                width: "40px",
-                                                            }}
-                                                            src={
-                                                                product
-                                                                    ?.images[0]
-                                                                    .url
-                                                            }
+                                                            className={styles.thumb}
+                                                            src={product?.images[0]?.url}
                                                             alt={product?.name}
                                                         />
-                                                    </td>
-                                                    <td>{product?.name}</td>
-                                                    <td>{product?.price}</td>
-                                                    <td>{product?.stock}</td>
-                                                    <td
-                                                        className={
-                                                            styles.actions
-                                                        }
-                                                    >
+                                                        <span className={styles.productName}>
+                                                            {product?.name}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span className={styles.idText}>{product?._id}</span>
+                                                </td>
+                                                <td className={styles.priceCell}>
+                                                    {formatPrice(product?.price)}
+                                                </td>
+                                                <td>
+                                                    {product?.stock === 0 ? (
+                                                        <span className={`${styles.badge} ${styles.badgeOut}`}>
+                                                            Out of stock
+                                                        </span>
+                                                    ) : product?.stock <= 5 ? (
+                                                        <span className={`${styles.badge} ${styles.badgeLow}`}>
+                                                            {product.stock} left
+                                                        </span>
+                                                    ) : (
+                                                        <span className={`${styles.badge} ${styles.badgeOk}`}>
+                                                            {product.stock} in stock
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <div className={styles.actions}>
                                                         <Link
                                                             to={`/admin/product/details/${product._id}`}
+                                                            className={`${styles.actionBtn} ${styles.view}`}
+                                                            aria-label="View product"
                                                         >
-                                                            <AiOutlineEye
-                                                                size={20}
-                                                            />
+                                                            <AiOutlineEye size={16} />
                                                         </Link>
                                                         <Link
                                                             to={`/admin/product/${product._id}`}
+                                                            className={`${styles.actionBtn} ${styles.edit}`}
+                                                            aria-label="Edit product"
                                                         >
-                                                            <AiOutlineEdit
-                                                                size={20}
-                                                            />
+                                                            <AiOutlineEdit size={16} />
                                                         </Link>
                                                         <button
-                                                            onClick={() =>
-                                                                deleteProductHandler(
-                                                                    product._id
-                                                                )
-                                                            }
+                                                            className={`${styles.actionBtn} ${styles.delete}`}
+                                                            onClick={() => deleteProductHandler(product._id)}
+                                                            aria-label="Delete product"
                                                         >
-                                                            <AiOutlineDelete
-                                                                size={20}
-                                                            />
+                                                            <AiOutlineDelete size={16} />
                                                         </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </>
-                                )}
-                            </Table>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </Table>
+                            ) : (
+                                <div className={styles.emptyState}>
+                                    <AiOutlineInbox size={32} />
+                                    <p>No products yet</p>
+                                    <span>Products you add will show up here.</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

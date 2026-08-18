@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import Navbar from "../../../components/admin/navbar/Navbar";
 import Sidebar from "../../../components/admin/sidebar/Sidebar";
-import Widget from "../../../components/widget/Widget";
-import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
+import { AiOutlineShoppingCart, AiOutlineUser, AiOutlineInbox, AiOutlineWarning } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./Dashboard.module.scss";
@@ -29,48 +28,55 @@ const Dashboard = () => {
         dispatch(allUsers());
     }, [dispatch]);
 
-    let stockout = products?.filter((item) => item.stock === 0);
+    const stockout = products?.filter((item) => item.stock === 0) ?? [];
+    const hasStockAlert = stockout.length > 0;
 
-    const user = {
-        title: "USERS",
-        total: users?.length,
-        link: (
-            <Link style={{ textDecoration: "none" }} to={"/admin/users"}>
-                See all user
-            </Link>
-        ),
-        icon: <AiOutlineUser />,
-    };
-    const order = {
-        title: "ORDERS",
-        total: orders?.length,
-        link: (
-            <Link style={{ textDecoration: "none" }} to={"/admin/orders"}>
-                See all orders
-            </Link>
-        ),
-        icon: <AiOutlineShoppingCart />,
-    };
-    const product = {
-        title: "PRODUCTS",
-        total: products?.length,
-        link: (
-            <Link style={{ textDecoration: "none" }} to={"/admin/products"}>
-                See all products
-            </Link>
-        ),
-        icon: <AiOutlineUser />,
-    };
-    const stock = {
-        title: "STOCK OUT",
-        total: stockout.length,
-        link: (
-            <Link style={{ textDecoration: "none" }} to={"/admin/users"}>
-                See all user
-            </Link>
-        ),
-        icon: <AiOutlineUser />,
-    };
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+    const today = new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+    });
+
+    const statCards = [
+        {
+            key: "users",
+            label: "Users",
+            value: users?.length ?? 0,
+            icon: <AiOutlineUser />,
+            to: "/admin/users",
+            linkText: "View all users",
+            accent: "users",
+        },
+        {
+            key: "orders",
+            label: "Orders",
+            value: orders?.length ?? 0,
+            icon: <AiOutlineShoppingCart />,
+            to: "/admin/orders",
+            linkText: "View all orders",
+            accent: "orders",
+        },
+        {
+            key: "products",
+            label: "Products",
+            value: products?.length ?? 0,
+            icon: <AiOutlineInbox />,
+            to: "/admin/products",
+            linkText: "View all products",
+            accent: "products",
+        },
+        {
+            key: "stockout",
+            label: "Stock out",
+            value: stockout.length,
+            icon: <AiOutlineWarning />,
+            to: "/admin/products",
+            linkText: "Review low stock",
+            accent: "stockout",
+        },
+    ];
 
     return (
         <div className={styles.dashboard}>
@@ -82,38 +88,47 @@ const Dashboard = () => {
                 <div className="col-md-10">
                     <Navbar />
                     {loading ? (
-                        <>
-                            <Loader />
-                        </>
+                        <Loader />
                     ) : (
-                        <>
-                            <div className={styles.widgets}>
-                                <Widget
-                                    title={user.title}
-                                    icon={user.icon}
-                                    link={user.link}
-                                    total={user.total}
-                                />
-                                <Widget
-                                    title={order.title}
-                                    icon={order.icon}
-                                    link={order.link}
-                                    total={order.total}
-                                />
-                                <Widget
-                                    title={product.title}
-                                    icon={product.icon}
-                                    link={product.link}
-                                    total={product.total}
-                                />
-                                <Widget
-                                    title={stock.title}
-                                    icon={stock.icon}
-                                    link={stock.link}
-                                    total={stock.total}
-                                />
+                        <div className={styles.content}>
+                            <header className={styles.pageHeader}>
+                                <div>
+                                    <p className={styles.eyebrow}>Dashboard</p>
+                                    <h1>{greeting}, Admin.</h1>
+                                    <p className={styles.subhead}>
+                                        Here's the state of your store — {today}.
+                                    </p>
+                                </div>
+                                {hasStockAlert && (
+                                    <div className={styles.alertPill}>
+                                        <span className={styles.pulseDot} />
+                                        {stockout.length} product{stockout.length > 1 ? "s" : ""} out of stock
+                                    </div>
+                                )}
+                            </header>
+
+                            <div className={styles.statGrid}>
+                                {statCards.map((card) => (
+                                    <Link
+                                        to={card.to}
+                                        key={card.key}
+                                        className={`${styles.statCard} ${styles[card.accent]}`}
+                                    >
+                                        <div className={styles.statTop}>
+                                            <span className={styles.iconChip}>{card.icon}</span>
+                                            <span className={styles.statLabel}>{card.label}</span>
+                                        </div>
+                                        <div className={styles.statValue}>
+                                            {String(card.value).padStart(2, "0")}
+                                        </div>
+                                        <div className={styles.statFooter}>
+                                            <span>{card.linkText}</span>
+                                            <span className={styles.arrow} aria-hidden="true">→</span>
+                                        </div>
+                                    </Link>
+                                ))}
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
