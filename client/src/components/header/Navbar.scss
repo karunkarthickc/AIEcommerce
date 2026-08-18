@@ -355,12 +355,15 @@
     }
 
     .search {
-        display: none; // Hide search on mobile (or keep it if you prefer)
+        display: none;
     }
 
     .nav_links {
-        .user-section span {
-            display: none; // Hide username on small screens
+        // Hide account/login controls in the top bar on mobile —
+        // they now live inside the sidebar menu. Keep cart visible.
+        .user-section,
+        .login-btn {
+            display: none;
         }
     }
 
@@ -376,5 +379,42 @@
 
     .nav_links ul {
         gap: 0.8rem;
+    }
+}
+
+.mobile-account {
+    margin-top: auto;
+    padding-top: 1.5rem;
+
+
+    li {
+        margin-bottom: 1rem;
+    }
+
+    a,
+    .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: #333;
+        text-decoration: none;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+
+        &:hover {
+            color: #f97316;
+        }
+    }
+
+    .logout-btn {
+        color: #ef4444;
+
+        &:hover {
+            color: #dc2626;
+        }
     }
 }

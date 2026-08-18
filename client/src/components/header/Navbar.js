@@ -141,45 +141,79 @@ const Navbar = () => {
                         <HiMenuAlt3 size={28} onClick={() => setToggle(true)} />
 
                         {toggle && (
-                            <motion.div
-                                className="mobile-menu"
-                                whileInView={{ x: [300, 0] }}
-                                transition={{ duration: 0.4, ease: "easeOut" }}
-                            >
-                                <HiX size={28} onClick={() => setToggle(false)} />
-                                <ul>
-                                    <li>
-                                        <Link to="/" onClick={() => setToggle(false)}>
-                                            Home
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            to="/products"
-                                            onClick={() => setToggle(false)}
-                                        >
-                                            Products
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            to="/contact"
-                                            onClick={() => setToggle(false)}
-                                        >
-                                            Contact
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link
-                                            to="/about"
-                                            onClick={() => setToggle(false)}
-                                        >
-                                            About
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </motion.div>
-                        )}
+    <motion.div
+        className="mobile-menu"
+        whileInView={{ x: [300, 0] }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+        <HiX size={28} onClick={() => setToggle(false)} />
+        <ul>
+            <li>
+                <Link to="/" onClick={() => setToggle(false)}>
+                    Home
+                </Link>
+            </li>
+            <li>
+                <Link to="/products" onClick={() => setToggle(false)}>
+                    Products
+                </Link>
+            </li>
+            <li>
+                <Link to="/contact" onClick={() => setToggle(false)}>
+                    Contact
+                </Link>
+            </li>
+            <li>
+                <Link to="/about" onClick={() => setToggle(false)}>
+                    About
+                </Link>
+            </li>
+        </ul>
+
+        {/* Account section */}
+        <ul className="mobile-account">
+            {user ? (
+                <>
+                    <li>
+                        <Link to="/me" onClick={() => setToggle(false)}>
+                            <AiOutlineUser size={18} />
+                            Profile
+                        </Link>
+                    </li>
+
+                    {user?.role === "admin" && (
+                        <li>
+                            <Link to="/admin" onClick={() => setToggle(false)}>
+                                <MdOutlineDashboard size={18} />
+                                Dashboard
+                            </Link>
+                        </li>
+                    )}
+
+                    <li>
+                        <button
+                            className="logout-btn"
+                            onClick={() => {
+                                logoutHandler();
+                                setToggle(false);
+                            }}
+                        >
+                            <AiOutlineLogout size={18} />
+                            Logout
+                        </button>
+                    </li>
+                </>
+            ) : (
+                <li>
+                    <Link to="/login" onClick={() => setToggle(false)}>
+                        <AiOutlineUser size={18} />
+                        Login
+                    </Link>
+                </li>
+            )}
+        </ul>
+    </motion.div>
+)}
                     </div>
                 </div>
             </nav>
