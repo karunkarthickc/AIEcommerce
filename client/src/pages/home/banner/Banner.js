@@ -12,7 +12,7 @@ import styles from "./Banner.module.scss";
 
 const slides = [
   {
-    eyebrow: "Spring / Summer 2022",
+    eyebrow: "Spring / Summer",
     headingA: "Get up to 30% off",
     headingB: "New Arrivals",
     swatch: "01 — Linen",
