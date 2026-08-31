@@ -7,10 +7,14 @@ const SYSTEM_PROMPT = `You are ShopX AI Shopping Assistant — a helpful, concis
 You have access to tools that query the real product catalog and order database. ALWAYS use tools instead of guessing product info, prices, or order status.
 
 Guidelines:
-- For product searches ("running shoes under $50"), call search_products with appropriate filters.
+- For product searches ("running shoes under ₹5000"), call search_products with appropriate filters.
 - For recommendations, call recommend_products with the user's preference.
 - For return/refund questions, call get_return_policy (and get_product_details if about a specific item).
 - For order tracking, call get_order_status or get_user_orders. If the user isn't logged in, tell them to log in.
+- If the user asks to add an item to their cart ("add this to my cart", "add 2 running shoes to cart"), call add_to_cart with the product name/ID and quantity (default 1). If the product name is ambiguous, use search_products or get_product_details first to confirm which item they mean.
+- If the user asks to remove an item from their cart, call remove_from_cart.
+- For wishlist requests ("save this for later", "add to my wishlist", "favorite this"), call add_to_wishlist. To remove, call remove_from_wishlist.
+- Cart and wishlist actions apply to the user's browser session, so after calling these tools, confirm in your reply exactly what you did (e.g., "Added 2 × Nike Air Zoom to your cart.").
 - When showing products, mention name, price, and briefly why it fits their request.
 - Keep responses friendly and under 150 words unless listing multiple products.
 - If a tool returns requiresAuth, politely ask the user to log in at /login.`;
@@ -18,15 +22,15 @@ Guidelines:
 const MAX_TOOL_ROUNDS = 5;
 
 async function runAssistantLoop(messages, userId) {
-const apiKey = process.env.OPENROUTER_API_KEY;
-if (!apiKey || apiKey === "your_openrouter_api_key") {
-    return runFallbackAssistant(messages, userId);
-}
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey || apiKey === "your_openrouter_api_key") {
+        return runFallbackAssistant(messages, userId);
+    }
 
-const openai = new OpenAI({
-    apiKey,
-    baseURL: "https://openrouter.ai/api/v1",
-});
+    const openai = new OpenAI({
+        apiKey,
+        baseURL: "https://openrouter.ai/api/v1",
+    });
     const conversation = [
         { role: "system", content: SYSTEM_PROMPT },
         ...messages,
@@ -34,10 +38,11 @@ const openai = new OpenAI({
 
     const toolsUsed = [];
     let products = [];
+    let actions = [];
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
         const response = await openai.chat.completions.create({
-           model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free",
+            model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free",
             messages: conversation,
             tools: toolDefinitions,
             tool_choice: "auto",
@@ -51,6 +56,7 @@ const openai = new OpenAI({
                 reply: choice.content,
                 toolsUsed,
                 products,
+                actions,
             };
         }
 
@@ -67,6 +73,15 @@ const openai = new OpenAI({
                 products.push(result.product);
             }
 
+            if (result.action) {
+                actions.push({
+                    type: result.action,
+                    productId: result.product?.id ? String(result.product.id) : result.productId,
+                    product: result.product,
+                    quantity: result.quantity,
+                });
+            }
+
             conversation.push({
                 role: "tool",
                 tool_call_id: toolCall.id,
@@ -79,6 +94,7 @@ const openai = new OpenAI({
         reply: "I need a bit more info to help with that. Could you rephrase your question?",
         toolsUsed,
         products,
+        actions,
     };
 }
 
@@ -89,9 +105,41 @@ async function runFallbackAssistant(messages, userId) {
 
     const toolsUsed = [];
     let products = [];
+    let actions = [];
     let toolResult;
 
-    if (/return|refund|exchange/.test(lastUserMsg)) {
+    if (/add.*(to (my )?cart)|buy this|purchase this/.test(lastUserMsg)) {
+        const qtyMatch = lastUserMsg.match(/(\d+)\s*(x|pairs?|pieces?|of)?/);
+        const productName = lastUserMsg
+            .replace(/add|to my cart|to cart|please|buy|purchase|this|\d+\s*(x|pairs?|pieces?|of)?/gi, "")
+            .trim();
+        toolResult = await executeTool(
+            "add_to_cart",
+            { productName, quantity: qtyMatch ? Number(qtyMatch[1]) : 1 },
+            userId
+        );
+        toolsUsed.push({ tool: "add_to_cart", args: { productName } });
+    } else if (/remove.*(from (my )?cart)|take.*out of.*cart/.test(lastUserMsg)) {
+        const productName = lastUserMsg
+            .replace(/remove|from my cart|from cart|take|out of|please/gi, "")
+            .trim();
+        toolResult = await executeTool("remove_from_cart", { productName }, userId);
+        toolsUsed.push({ tool: "remove_from_cart", args: { productName } });
+    } else if (/wishlist|save.*for later|favorite/.test(lastUserMsg)) {
+        if (/remove|delete|unfavorite/.test(lastUserMsg)) {
+            const productName = lastUserMsg
+                .replace(/remove|delete|unfavorite|from (my )?wishlist|please/gi, "")
+                .trim();
+            toolResult = await executeTool("remove_from_wishlist", { productName }, userId);
+            toolsUsed.push({ tool: "remove_from_wishlist", args: { productName } });
+        } else {
+            const productName = lastUserMsg
+                .replace(/add|to (my )?wishlist|save.*for later|favorite|please/gi, "")
+                .trim();
+            toolResult = await executeTool("add_to_wishlist", { productName }, userId);
+            toolsUsed.push({ tool: "add_to_wishlist", args: { productName } });
+        }
+    } else if (/return|refund|exchange/.test(lastUserMsg)) {
         const productMatch = lastUserMsg.match(/jacket|shoe|dress|mat|earbud/i);
         toolResult = await executeTool(
             "get_return_policy",
@@ -151,18 +199,36 @@ async function runFallbackAssistant(messages, userId) {
             reply: "To view your orders, please log in first at /login. Once signed in, ask me again to track your order!",
             toolsUsed,
             products: [],
+            actions: [],
         };
     }
 
     if (toolResult?.error && !toolResult.products) {
-        return { reply: toolResult.error, toolsUsed, products: [] };
+        return { reply: toolResult.error, toolsUsed, products: [], actions: [] };
+    }
+
+    if (toolResult?.product && !products.length) {
+        products = [toolResult.product];
+    }
+
+    if (toolResult?.action) {
+        actions.push({
+            type: toolResult.action,
+            productId: toolResult.product?.id ? String(toolResult.product.id) : toolResult.productId,
+            product: toolResult.product,
+            quantity: toolResult.quantity,
+        });
     }
 
     const reply = formatFallbackReply(lastUserMsg, toolResult, products);
-    return { reply, toolsUsed, products };
+    return { reply, toolsUsed, products, actions };
 }
 
 function formatFallbackReply(query, toolResult, products) {
+    if (toolResult?.action && toolResult?.message) {
+        return toolResult.message;
+    }
+
     if (toolResult?.status) {
         const items = toolResult.items.map((i) => i.name).join(", ");
         return `Your order #${String(toolResult.orderId).slice(-6)} is ${toolResult.status}. Items: ${items}. Total: $${toolResult.total.toFixed(2)}. Shipped to ${toolResult.shippingAddress}.`;
@@ -224,5 +290,6 @@ exports.chat = catchAsyncErrors(async (req, res) => {
         reply: result.reply,
         products: uniqueProducts,
         toolsUsed: result.toolsUsed,
+        actions: result.actions || [],
     });
 });

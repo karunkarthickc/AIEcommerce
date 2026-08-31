@@ -157,6 +157,76 @@ const toolDefinitions = [
             },
         },
     },
+    {
+        type: "function",
+        function: {
+            name: "add_to_cart",
+            description:
+                "Add a product to the user's shopping cart. Use when the user says things like 'add this to my cart', 'add 2 pairs of Nike Air Zoom to cart', or 'I want to buy the yoga mat'. Cart lives client-side, so this returns an action the frontend applies.",
+            parameters: {
+                type: "object",
+                properties: {
+                    productId: {
+                        type: "string",
+                        description: "MongoDB product ID if known",
+                    },
+                    productName: {
+                        type: "string",
+                        description: "Product name or partial name if ID is unknown",
+                    },
+                    quantity: {
+                        type: "number",
+                        description: "Quantity to add. Defaults to 1.",
+                    },
+                },
+            },
+        },
+    },
+    {
+        type: "function",
+        function: {
+            name: "remove_from_cart",
+            description:
+                "Remove a product from the user's shopping cart. Use for 'remove the jacket from my cart' or 'take that out of my cart'.",
+            parameters: {
+                type: "object",
+                properties: {
+                    productId: { type: "string", description: "MongoDB product ID if known" },
+                    productName: { type: "string", description: "Product name or partial name" },
+                },
+            },
+        },
+    },
+    {
+        type: "function",
+        function: {
+            name: "add_to_wishlist",
+            description:
+                "Save a product to the user's wishlist. Use for 'save this for later', 'add to my wishlist', 'favorite this item'.",
+            parameters: {
+                type: "object",
+                properties: {
+                    productId: { type: "string", description: "MongoDB product ID if known" },
+                    productName: { type: "string", description: "Product name or partial name" },
+                },
+            },
+        },
+    },
+    {
+        type: "function",
+        function: {
+            name: "remove_from_wishlist",
+            description:
+                "Remove a product from the user's wishlist. Use for 'remove this from my wishlist' or 'unfavorite this'.",
+            parameters: {
+                type: "object",
+                properties: {
+                    productId: { type: "string", description: "MongoDB product ID if known" },
+                    productName: { type: "string", description: "Product name or partial name" },
+                },
+            },
+        },
+    },
 ];
 
 async function searchProducts({ keyword, category, maxPrice, minPrice, limit = 5 }) {
@@ -263,12 +333,12 @@ async function getReturnPolicy({ productCategory, productName }) {
         if (product) {
             policy.productNote = `For "${product.name}" (${product.category}): check product page for any special return notes in the description.`;
             if (product?.description) {
-    const desc = product.description.toLowerCase();
-    if (desc.includes("return policy")) {
-        const match = product.description.match(/Return policy:[^.]+\./i);
-        if (match) policy.productNote = match[0];
-    }
-}
+                const desc = product.description.toLowerCase();
+                if (desc.includes("return policy")) {
+                    const match = product.description.match(/Return policy:[^.]+\./i);
+                    if (match) policy.productNote = match[0];
+                }
+            }
         }
     }
 
@@ -341,6 +411,85 @@ async function getOrderStatus(userId, { orderId, latest }) {
     };
 }
 
+async function resolveProduct({ productId, productName }) {
+    if (productId) return Product.findById(productId).lean();
+    if (productName) {
+        return Product.findOne({
+            name: { $regex: productName, $options: "i" },
+        }).lean();
+    }
+    return null;
+}
+
+async function addToCart({ productId, productName, quantity = 1 }) {
+    const product = await resolveProduct({ productId, productName });
+
+    if (!product) {
+        return {
+            error: "I couldn't find that product. Try search_products first to confirm the exact name.",
+        };
+    }
+
+    if (product.stock < 1) {
+        return { error: `Sorry, "${product.name}" is currently out of stock.` };
+    }
+
+    const qty = Math.max(1, Math.min(Number(quantity) || 1, product.stock));
+
+    return {
+        action: "ADD_TO_CART",
+        product: formatProduct(product),
+        quantity: qty,
+        message: `Added ${qty} × ${product.name} to your cart.`,
+    };
+}
+
+async function removeFromCart({ productId, productName }) {
+    const product = await resolveProduct({ productId, productName });
+
+    if (!product) {
+        return { error: "I couldn't find that product in the catalog." };
+    }
+
+    return {
+        action: "REMOVE_FROM_CART",
+        productId: String(product._id),
+        product: formatProduct(product),
+        message: `Removed ${product.name} from your cart.`,
+    };
+}
+
+async function addToWishlist({ productId, productName }) {
+    const product = await resolveProduct({ productId, productName });
+
+    if (!product) {
+        return {
+            error: "I couldn't find that product. Try search_products first.",
+        };
+    }
+
+    return {
+        action: "ADD_TO_WISHLIST",
+        product: formatProduct(product),
+        message: `Added ${product.name} to your wishlist.`,
+    };
+}
+
+async function removeFromWishlist({ productId, productName }) {
+    const product = await resolveProduct({ productId, productName });
+
+    if (!product) {
+        return { error: "I couldn't find that product in the catalog." };
+    }
+
+    return {
+        action: "REMOVE_FROM_WISHLIST",
+        productId: String(product._id),
+        product: formatProduct(product),
+        message: `Removed ${product.name} from your wishlist.`,
+    };
+}
+
 function formatProduct(p, includeDescription = false) {
     const base = {
         id: p._id,
@@ -370,6 +519,10 @@ async function executeTool(name, args, userId) {
             return getUserOrders(userId);
         case "get_order_status":
             return getOrderStatus(userId, args);
+        case "add_to_cart":
+            return addToCart(args);
+        case "remove_from_cart":
+            return removeFromCart(args);
         default:
             return { error: `Unknown tool: ${name}` };
     }
