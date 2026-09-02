@@ -20,7 +20,7 @@ const toolDefinitions = [
         function: {
             name: "search_products",
             description:
-                "Search the product catalog by keyword, category, and price range. Use for queries like 'running shoes under $50' or 'show me jackets'.",
+                "Search the product catalog by keyword, category, and price range. Use for queries like 'running shoes under ₹5000' or 'show me jackets'.",
             parameters: {
                 type: "object",
                 properties: {

@@ -13,7 +13,7 @@ const Announcement = () => {
                     Easy Returns Within 30 Days — Shop with Confidence
                 </span>
                 <span aria-hidden="true">
-                    Free Shipping on Orders Over $50 — Limited Time
+                    Free Shipping on Orders Over ₹5000 — Limited Time
                 </span>
                 <span aria-hidden="true">
                     New Arrivals Just Dropped — Shop the Latest
