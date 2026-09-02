@@ -14,18 +14,10 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
         images = req.body.images;
     }
 
-    let imagesLinks = [];
-
-    for (let i = 0; i < images.length; i++) {
-        const result = await cloudinary.v2.uploader.upload(images[i], {
-            folder: "shopx/products",
-        });
-
-        imagesLinks.push({
-            public_id: result.public_id,
-            url: result.secure_url,
-        });
-    }
+    const imagesLinks = images.map((url) => ({
+        public_id: url,
+        url: url,
+    }));
 
     req.body.images = imagesLinks;
     req.body.user = req.user.id;
@@ -97,25 +89,22 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
     let images = [];
     if (typeof req.body.images === "string") {
         images.push(req.body.images);
-    } else if (Array.isArray(req.body.images)) {
+    } else {
         images = req.body.images;
     }
 
-    // Only treat this as a real "images" update if we have at least
-    // one genuinely new base64 image string to upload.
-    const newBase64Images = images.filter(
-        (img) => typeof img === "string" && img.startsWith("data:")
-    );
-
-    if (images.length > 0 && newBase64Images.length > 0) {
-        // Delete old images from Cloudinary
+    if (images !== undefined) {
+        // Deleting images associated with the product
         for (let i = 0; i < product.images.length; i++) {
-            await cloudinary.v2.uploader.destroy(product.images[i].public_id);
+            const result = await cloudinary.v2.uploader.destroy(
+                product.images[i].public_id
+            );
         }
 
         let imagesLinks = [];
-        for (let i = 0; i < newBase64Images.length; i++) {
-            const result = await cloudinary.v2.uploader.upload(newBase64Images[i], {
+
+        for (let i = 0; i < images.length; i++) {
+            const result = await cloudinary.v2.uploader.upload(images[i], {
                 folder: "shopx/products",
             });
 
@@ -126,9 +115,6 @@ exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
         }
 
         req.body.images = imagesLinks;
-    } else {
-        // No new images uploaded — don't overwrite existing ones
-        delete req.body.images;
     }
 
     product = await Product.findByIdAndUpdate(req.params.id, req.body, {
