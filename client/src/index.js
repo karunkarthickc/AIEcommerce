@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import store from "./store";
 import "bootstrap/dist/css/bootstrap.min.css";
+import SocialAuthProvider from "./components/auth/SocialAuthProvider";
 
 import { positions, transitions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
@@ -19,7 +20,9 @@ const options = {
 ReactDOM.render(
     <Provider store={store}>
         <AlertProvider template={AlertTemplate} {...options}>
-            <App />
+            <SocialAuthProvider>
+                <App />
+            </SocialAuthProvider>
         </AlertProvider>
     </Provider>,
     document.getElementById("root")

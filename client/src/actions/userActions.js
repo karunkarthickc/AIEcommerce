@@ -96,6 +96,35 @@ export const login = (email, password) => async (dispatch) => {
     }
 };
 
+// Social login (Google / Facebook)
+export const socialLogin = (provider, token) => async (dispatch) => {
+    try {
+        dispatch({ type: LOGIN_REQUEST });
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
+
+        const { data } = await axiosInstance.post(
+            `/api/v1/auth/${provider}`,
+            { token },
+            config
+        );
+
+        dispatch({
+            type: LOGIN_SUCCESS,
+            payload: data.user,
+        });
+    } catch (error) {
+        dispatch({
+            type: LOGIN_FAIL,
+            payload: error.response?.data?.message || "Social login failed",
+        });
+    }
+};
+
 // Load user
 export const loadUser = () => async (dispatch) => {
     try {

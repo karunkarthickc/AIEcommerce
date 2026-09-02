@@ -7,6 +7,7 @@ import Footer from "../../../components/footer/Footer";
 import Navbar from "../../../components/header/Navbar";
 import ButtonLoader from "../../../components/loader/ButtonLoader";
 import MetaData from "../../../components/MetaData";
+import SocialLogin from "../../../components/auth/SocialLogin";
 import styles from "./Login.module.scss";
 
 const Login = ({ history, location }) => {
@@ -89,6 +90,8 @@ const Login = ({ history, location }) => {
                             {loading ? <ButtonLoader /> : "Sign in"}
                         </button>
                     </form>
+
+                    <SocialLogin />
 
                     <p className={styles.signup}>
                         Don’t have an account?{" "}

@@ -8,6 +8,7 @@ import Footer from "../../../components/footer/Footer";
 import Navbar from "../../../components/header/Navbar";
 import ButtonLoader from "../../../components/loader/ButtonLoader";
 import MetaData from "../../../components/MetaData";
+import SocialLogin from "../../../components/auth/SocialLogin";
 import styles from "./Register.module.scss";
 
 const Register = ({ history }) => {
@@ -162,6 +163,8 @@ const Register = ({ history }) => {
                             {loading ? <ButtonLoader /> : "Create account"}
                         </button>
                     </form>
+
+                    <SocialLogin />
 
                     <p className={styles.signup}>
                         Already have an account?{" "}
