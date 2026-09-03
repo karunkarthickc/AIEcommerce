@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { MdOutlineDashboard, MdOutlineFavoriteBorder } from "react-icons/md";
+import { MdOutlineDashboard, MdOutlineFavoriteBorder, MdOutlineHome } from "react-icons/md";
 import { BiUserCircle } from "react-icons/bi";
 import { FiPlusSquare } from "react-icons/fi";
 import { HiTemplate } from "react-icons/hi";
@@ -12,6 +12,7 @@ const NAV_SECTIONS = [
     {
         label: "Main",
         items: [
+                  { to: "/", label: "Home", icon: MdOutlineHome, end: true },
             { to: "/admin", label: "Dashboard", icon: MdOutlineDashboard, end: true },
         ],
     },
