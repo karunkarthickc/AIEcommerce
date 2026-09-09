@@ -174,10 +174,10 @@ async function runFallbackAssistant(messages, userId) {
         toolsUsed.push({ tool: "recommend_products", args: {} });
         if (toolResult.products) products = toolResult.products;
     } else {
-        const priceMatch = lastUserMsg.match(/under\s*\$?\s*(\d+)/);
+        const priceMatch = lastUserMsg.match(/under\s*₹?\s*(\d+)/);
         const keyword = lastUserMsg
             .replace(
-                /show me|find|search|under\s*\$?\d+|cheap|affordable/gi,
+                /show me|find|search|under\s*₹?\d+|cheap|affordable/gi,
                 ""
             )
             .trim();
@@ -231,7 +231,7 @@ function formatFallbackReply(query, toolResult, products) {
 
     if (toolResult?.status) {
         const items = toolResult.items.map((i) => i.name).join(", ");
-        return `Your order #${String(toolResult.orderId).slice(-6)} is ${toolResult.status}. Items: ${items}. Total: $${toolResult.total.toFixed(2)}. Shipped to ${toolResult.shippingAddress}.`;
+        return `Your order #${String(toolResult.orderId).slice(-6)} is ${toolResult.status}. Items: ${items}. Total: ₹${toolResult.total.toFixed(2)}. Shipped to ${toolResult.shippingAddress}.`;
     }
 
     if (toolResult?.general) {
@@ -246,7 +246,7 @@ function formatFallbackReply(query, toolResult, products) {
     if (products.length > 0) {
         const list = products
             .slice(0, 5)
-            .map((p) => `${p.name} — $${p.price} (${p.category})`)
+            .map((p) => `${p.name} — ₹${p.price} (${p.category})`)
             .join("\n");
         return `Here's what I found in our catalog:\n\n${list}\n\nClick any product to view details!`;
     }
@@ -255,7 +255,7 @@ function formatFallbackReply(query, toolResult, products) {
         return toolResult.orders
             .map(
                 (o) =>
-                    `Order #${String(o.id).slice(-6)}: ${o.status} — $${o.total.toFixed(2)}`
+                    `Order #${String(o.id).slice(-6)}: ${o.status} — ₹${o.total.toFixed(2)}`
             )
             .join("\n");
     }
