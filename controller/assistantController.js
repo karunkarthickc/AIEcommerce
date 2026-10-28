@@ -42,7 +42,7 @@ async function runAssistantLoop(messages, userId) {
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
         const response = await openai.chat.completions.create({
-            model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free",
+            model: "google/gemma-4-31b-it:free",
             messages: conversation,
             tools: toolDefinitions,
             tool_choice: "auto",
