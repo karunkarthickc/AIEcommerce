@@ -21,6 +21,27 @@ Guidelines:
 
 const MAX_TOOL_ROUNDS = 5;
 
+const MODELS = [
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+];
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function createCompletion(openai, params, retries = 2) {
+    for (let attempt = 0; ; attempt++) {
+        try {
+            return await openai.chat.completions.create(params);
+        } catch (err) {
+            const retryable = err.status === 429 || err.status >= 500;
+            if (!retryable || attempt >= retries) throw err;
+            await sleep(1000 * 2 ** attempt); // 1s, 2s
+        }
+    }
+}
+
 async function runAssistantLoop(messages, userId) {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey || apiKey === "your_openrouter_api_key") {
@@ -41,8 +62,9 @@ async function runAssistantLoop(messages, userId) {
     let actions = [];
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-        const response = await openai.chat.completions.create({
-            model: "google/gemma-4-31b-it:free",
+        const response = await createCompletion(openai, {
+            model: MODELS[0],
+            models: MODELS, // OpenRouter-specific fallback list
             messages: conversation,
             tools: toolDefinitions,
             tool_choice: "auto",
@@ -274,7 +296,13 @@ exports.chat = catchAsyncErrors(async (req, res) => {
     }
 
     const userId = req.user?._id?.toString() || null;
-    const result = await runAssistantLoop(messages, userId);
+    let result;
+    try {
+        result = await runAssistantLoop(messages, userId);
+    } catch (err) {
+        console.error("LLM failed, using fallback assistant:", err.status, err.message);
+        result = await runFallbackAssistant(messages, userId);
+    }
 
     const uniqueProducts = [];
     const seen = new Set();
